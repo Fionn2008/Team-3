@@ -1,0 +1,100 @@
+import pygame
+import sys
+from os.path import join
+
+# Initialize Pygame
+pygame.init()
+
+# Screen setup
+SCREEN_WIDTH = 1280
+SCREEN_HEIGHT = 720
+screen = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT))
+pygame.display.set_caption("Spiderman - Far From Dublin")
+
+# Player settings
+player1_size = 5
+
+
+
+player2_size = 5
+
+
+# Load images
+player1_img = pygame.image.load(join("vedha", "images", "spidy.png")).convert_alpha()
+rect = player1_img.get_bounding_rect()
+player1_img = player1_img.subsurface(rect).copy()
+player1_img = pygame.transform.scale(player1_img, (100, 100))
+
+player2_img = pygame.image.load(join("vedha", "images", "docock.png")).convert_alpha()
+rect = player2_img.get_bounding_rect()
+player2_img = player2_img.subsurface(rect).copy()
+player2_img = pygame.transform.scale(player2_img, (100, 100))
+
+bg_img = pygame.image.load(join("vedha", "images", "bridge.png")).convert()
+bg_img = pygame.transform.scale(bg_img, (SCREEN_WIDTH, SCREEN_HEIGHT))
+
+player1_rect = player1_img.get_rect(midbottom=(380, 500))
+player2_rect = player2_img.get_rect(midbottom=(820, 500))
+# Game loop
+clock = pygame.time.Clock()
+speed = 5
+
+running = True
+while running:
+    # Handle window events
+    for event in pygame.event.get():
+        if event.type == pygame.QUIT:
+            running = False
+    old_p1_rect = player1_rect.copy()
+    old_p2_rect = player2_rect.copy()
+
+
+    # 2. READ KEY PRESSES
+    keys = pygame.key.get_pressed()
+
+    # Player 1 Controls (WASD)
+    if keys[pygame.K_a]:
+        player1_rect.x -= speed
+    if keys[pygame.K_d]:
+        player1_rect.x += speed
+    if keys[pygame.K_w]:
+        player1_rect.y -= speed
+    if keys[pygame.K_s]:
+        player1_rect.y += speed
+
+    # Player 2 Controls (Arrow Keys)
+    if keys[pygame.K_LEFT]:
+        player2_rect.x -= speed
+    if keys[pygame.K_RIGHT]:
+        player2_rect.x += speed
+    if keys[pygame.K_UP]:
+        player2_rect.y -= speed
+    if keys[pygame.K_DOWN]:
+        player2_rect.y += speed
+
+    # A. Player-to-Player Collision (Prevents overlapping)
+    if player1_rect.colliderect(player2_rect):
+        player1_rect = old_p1_rect
+        player2_rect = old_p2_rect
+
+    # B. Screen Boundary Collision (Keeps players inside screen)
+    player1_rect.clamp_ip(screen.get_rect())
+    player2_rect.clamp_ip(screen.get_rect())
+
+    # 3. DRAW EVERYTHING
+    screen.blit(bg_img, (0, 0))
+    screen.blit(player1_img, player1_rect)
+    screen.blit(player2_img, player2_rect)
+
+    # Refresh screen
+    pygame.display.flip()
+    clock.tick(60)
+
+pygame.quit()
+sys.exit()
+
+
+   
+
+
+     
