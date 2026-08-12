@@ -1,0 +1,206 @@
+import pygame
+import sys
+from os.path import join
+from random import randint
+
+# Initialize Pygame
+pygame.init()
+
+#============================================== Screen setup ==============================================================
+SCREEN_WIDTH = 1280
+SCREEN_HEIGHT = 720
+screen = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT))
+pygame.display.set_caption("Spiderman - Far From Dublin")
+
+
+# ======================================== Health & Attack settings out loop ===============================================
+MAX_HEALTH = 100
+player_health = MAX_HEALTH
+enemy_health = MAX_HEALTH
+
+ATTACK_DAMAGE = 10
+enemy_ATTACK_RANGE = 120                   # enemy's (shorter) attack range
+spider_ATTACK_RANGE = 200                  # Spiderman's (longer) attack range
+ATTACK_COOLDOWN = 500                      # milliseconds between attacks
+
+player_last_attack = 0
+enemy_last_attack = 0
+
+
+# =============================================  Player identity ==========================================================
+def __init__(player, groups):
+        super().__init__(groups)
+# Load images
+
+player_img = pygame.image.load(join("Shahreen folder/image/image/gg.png")).convert_alpha()
+
+rect = player_img.get_bounding_rect()
+
+player_img = player_img.subsurface(rect).copy()                               #The character names are switched up enemy=spider 
+  
+player_img = pygame.transform.scale(player_img, (100, 100))                   #   when it should be enemy=gg
+
+player_rect = player_img.get_rect(midbottom=(380, 500))
+
+player_size = 1
+player_speed = 5
+player_x = 400
+player_y = 300
+
+# ==============================================  # Enemy identity ==========================================================
+def __init__(enemy, groups):
+        super().__init__(groups)
+enemy_img = pygame.image.load(join("Shahreen folder/image/image/spider.png")).convert_alpha()
+
+rect = enemy_img.get_bounding_rect()
+
+enemy_img = enemy_img.subsurface(rect).copy()
+
+enemy_img = pygame.transform.scale(enemy_img, (100, 100))
+
+enemy_size = 1
+enemy_speed = 5
+enemy_x = 100
+enemy_y = 300
+
+# FONT for game over text
+font = pygame.font.SysFont(None, 74)
+
+# ================================== # HEALTH BAR & ATTACK FUNCTIONS in loop ===============================================
+def draw_health_bar(x, y, health):
+    """Draws a health bar above a player."""
+    bar_width = 100
+    bar_height = 12
+    fill = int(bar_width * (health / MAX_HEALTH))
+
+    pygame.draw.rect(screen, (255, 0, 0), (x, y - 20, bar_width, bar_height))
+    pygame.draw.rect(screen, (0, 255, 0), (x, y - 20, fill, bar_height))
+    pygame.draw.rect(screen, (0, 0, 0), (x, y - 20, bar_width, bar_height), 2)
+
+
+def get_distance(x1, y1, x2, y2):
+    return ((x1 - x2) ** 2 + (y1 - y2) ** 2) ** 0.5
+
+# =================================== # BACKGROUND IMAGE & ENEMY POSITIONS ===============================================
+bg_img = pygame.image.load(join("Shahreen folder/image/image/forest.png.png")).convert()
+bg_img = pygame.transform.scale(bg_img, (SCREEN_WIDTH, SCREEN_HEIGHT))
+
+enemy_positions = []
+for i in range(1):
+    enemy_positions.append((randint(0,SCREEN_WIDTH), randint(0, SCREEN_HEIGHT)))
+
+
+
+# ======================================= # Game loop ======================================================================
+
+
+clock = pygame.time.Clock()
+game_over = False
+speed= 5
+
+while True:
+    # Events
+    for event in pygame.event.get():
+        if event.type == pygame.QUIT:
+            pygame.quit()
+            sys.exit()
+
+
+    screen.blit(player_img, (player_rect.x, player_rect.y))
+    screen.blit(bg_img, (0, 0))
+    screen.blit(player_img, (100, 150))
+    player_rect.left += 3
+    if player_rect.right < SCREEN_WIDTH:
+                player_rect.left+= 3
+
+    screen.blit(player_img,(100,150))
+ #====================================== player and enemy movement ============================================
+    # ==== Player movement (WASD keys) ===
+    keys = pygame.key.get_pressed()
+
+    if keys[pygame.K_a]:
+        player_x -= player_speed
+    if keys[pygame.K_d]:
+        player_x += player_speed
+    if keys[pygame.K_w]:
+        player_y -= player_speed
+    if keys[pygame.K_s]:
+        player_y += player_speed
+
+    # ==== Enemy movement (Arrow keys) ===
+    if keys[pygame.K_LEFT]:
+        enemy_x -= enemy_speed
+    if keys[pygame.K_RIGHT]:
+        enemy_x += enemy_speed
+    if keys[pygame.K_UP]:
+        enemy_y -= enemy_speed
+    if keys[pygame.K_DOWN]:
+        enemy_y += enemy_speed
+
+ #=============================== gg : chase spiderman ==========================================
+    dx = enemy_x - player_x
+    dy = enemy_y - player_y
+    dist_to_target = get_distance(player_x, player_y, enemy_x, enemy_y)
+    
+    if dist_to_target > 1:  # avoid division by zero / jitter when overlapping
+                dir_x = dx / dist_to_target
+                dir_y = dy / dist_to_target
+                player_x += dir_x * player_speed
+                player_y += dir_y * player_speed
+
+
+ # ========================= Keep players on screen ==================================
+
+    player_x = max(0, min(player_x, SCREEN_WIDTH - player_size))
+    player_y = max(0, min(player_y, SCREEN_HEIGHT - player_size))
+                
+    enemy_x = max(0, min(enemy_x, SCREEN_WIDTH - enemy_size))
+    enemy_y = max(0, min(enemy_y, SCREEN_HEIGHT - enemy_size))
+                    
+
+ # ========================= Attacking ===============================================
+    now = pygame.time.get_ticks()
+    distance = get_distance(player_x, player_y, enemy_x, enemy_y)
+
+    #  GG auto-attacks whenever Spiderman is in range
+    if distance < enemy_ATTACK_RANGE and now - player_last_attack > ATTACK_COOLDOWN:
+            player_last_attack = now
+            enemy_health = max(0, enemy_health - ATTACK_DAMAGE)
+
+        # Spiderman attacks with RIGHT CTRL
+    if keys[pygame.K_RCTRL] and now - player2_last_attack > ATTACK_COOLDOWN:
+            player2_last_attack = now
+            if distance < spider_ATTACK_RANGE:
+                player_health = max(0, player_health - ATTACK_DAMAGE)
+
+    if player_health <= 0 or enemy_health <= 0:
+            game_over = True
+
+    draw_health_bar(player_x, player_y, player_health)
+    draw_health_bar(enemy_x, enemy_y, enemy_health)
+
+    if game_over:
+            winner = "THE SLIMY GREEN GOBLIN" if enemy_health <= 0 else "SPIDERMAN"
+            text = font.render(f"{winner} Wins!", True, (255, 255, 255))
+            text_rect = text.get_rect(center=(SCREEN_WIDTH // 2, SCREEN_HEIGHT // 2))
+            screen.blit(text, text_rect)
+                   
+ 
+    # ========================= Keep players on screen ================================
+    player_x = max(0, min(player_x, SCREEN_WIDTH - player_size))
+    player_y = max(0, min(player_y, SCREEN_HEIGHT - player_size))
+
+    enemy_x = max(0, min(enemy_x, SCREEN_WIDTH - enemy_size))
+    enemy_y = max(0, min(enemy_y, SCREEN_HEIGHT - enemy_size))
+    
+
+    # Draw everything
+    screen.blit(bg_img, (0, 0))
+    screen.blit(player_img, (player_x, player_y))
+    screen.blit(enemy_img, (enemy_x, enemy_y))
+
+
+    pygame.display.update()
+    
+    pygame.display.flip()
+    clock.tick(60)
