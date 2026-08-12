@@ -1,3 +1,182 @@
+import pygame
+import sys
+from os.path import join
+from random import randint
+
+# Initialize Pygame
+pygame.init()
+
+# ============================================== Screen setup ======================================================
+
+SCREEN_WIDTH = 1280
+SCREEN_HEIGHT = 720
+screen = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT))
+pygame.display.set_caption("Spiderman - Far From Dublin")
+
+# ======================================== Health & Attack settings ===============================================
+
+# 100 hearts total
+MAX_HEARTS = 100
+HEART_DAMAGE = 5  # Each hit reduces 5 hearts
+
+player_health = MAX_HEARTS  # Spider-Man
+enemy_health = MAX_HEARTS   # Green Goblin (gg)
+
+ATTACK_COOLDOWN = 500       # milliseconds between attacks
+enemy_ATTACK_RANGE = 120    # Green Goblin attack range
+spider_ATTACK_RANGE = 250   # Spider-Man web attack range
+
+player_last_attack = 0
+enemy_last_attack = 0
+
+# ============================================= Player (Spider-Man) Setup ==========================================
+
+spider_img = pygame.image.load(join("Shahreen folder/image/image/spider.png")).convert_alpha()
+rect = spider_img.get_bounding_rect()
+spider_img = spider_img.subsurface(rect).copy()
+spider_img = pygame.transform.scale(spider_img, (100, 100))
+
+player_speed = 5
+player_x = 400
+player_y = 300
+
+# ============================================== Enemy (Green Goblin / gg) Setup ===================================
+
+gg_img = pygame.image.load(join("Shahreen folder/image/image/gg.png")).convert_alpha()
+rect = gg_img.get_bounding_rect()
+gg_img = gg_img.subsurface(rect).copy()
+gg_img = pygame.transform.scale(gg_img, (100, 100))
+
+enemy_speed = 4
+enemy_x = 100
+enemy_y = 300
+
+# Fonts
+font = pygame.font.SysFont(None, 64)
+ui_font = pygame.font.SysFont(None, 24)
+
+# ================================== Health Bar & Helper Functions ===============================================
+
+def draw_health_bar(x, y, hearts, label):
+    """Draws a health bar with a heart counter above a character."""
+    bar_width = 100
+    bar_height = 12
+    fill = int(bar_width * (hearts / MAX_HEARTS))
+
+    # Health bar background (Red) & Foreground (Green)
+    pygame.draw.rect(screen, (255, 0, 0), (x, y - 25, bar_width, bar_height))
+    pygame.draw.rect(screen, (0, 255, 0), (x, y - 25, fill, bar_height))
+    pygame.draw.rect(screen, (0, 0, 0), (x, y - 25, bar_width, bar_height), 2)
+
+    # Text counter for hearts
+    heart_text = ui_font.render(f"{label}: {hearts} Hearts", True, (255, 255, 255))
+    screen.blit(heart_text, (x, y - 45))
+
+def get_distance(x1, y1, x2, y2):
+    return ((x1 - x2) ** 2 + (y1 - y2) ** 2) ** 0.5
+
+# =================================== Background Image ===============================================
+
+bg_img = pygame.image.load(join("Shahreen folder/image/image/forest.png.png")).convert()
+bg_img = pygame.transform.scale(bg_img, (SCREEN_WIDTH, SCREEN_HEIGHT))
+
+# ======================================= Game Loop ======================================================
+
+clock = pygame.time.Clock()
+game_over = False
+
+while True:
+    now = pygame.time.get_ticks()
+
+    # Events
+    for event in pygame.event.get():
+        if event.type == pygame.QUIT:
+            pygame.quit()
+            sys.exit()
+
+    if not game_over:
+        keys = pygame.key.get_pressed()
+        mouse_buttons = pygame.mouse.get_pressed()
+
+        # ==== Player movement (WASD keys) ===
+        if keys[pygame.K_a]:
+            player_x -= player_speed
+        if keys[pygame.K_d]:
+            player_x += player_speed
+        if keys[pygame.K_w]:
+            player_y -= player_speed
+        if keys[pygame.K_s]:
+            player_y += player_speed
+
+        # ==== Enemy movement (Arrow keys) ===
+        if keys[pygame.K_LEFT]:
+            enemy_x -= enemy_speed
+        if keys[pygame.K_RIGHT]:
+            enemy_x += enemy_speed
+        if keys[pygame.K_UP]:
+            enemy_y -= enemy_speed
+        if keys[pygame.K_DOWN]:
+            enemy_y += enemy_speed
+
+        # ==== Green Goblin AI Chasing Behavior ====
+        dx = player_x - enemy_x
+        dy = player_y - enemy_y
+        dist_to_target = get_distance(player_x, player_y, enemy_x, enemy_y)
+
+        if dist_to_target > 20:  # Chase until close
+            dir_x = dx / dist_to_target
+            dir_y = dy / dist_to_target
+            enemy_x += dir_x * (enemy_speed * 0.5)
+            enemy_y += dir_y * (enemy_speed * 0.5)
+
+        # Clamp boundaries (Keep inside screen)
+        player_x = max(0, min(player_x, SCREEN_WIDTH - 100))
+        player_y = max(0, min(player_y, SCREEN_HEIGHT - 100))
+        enemy_x = max(0, min(enemy_x, SCREEN_WIDTH - 100))
+        enemy_y = max(0, min(enemy_y, SCREEN_HEIGHT - 100))
+
+        # ========================= Attacking Logic =========================
+        
+        # 1. Green Goblin Auto-Attacks Spider-Man (-5 Hearts)
+        if dist_to_target < enemy_ATTACK_RANGE and now - enemy_last_attack > ATTACK_COOLDOWN:
+            enemy_last_attack = now
+            player_health = max(0, player_health - HEART_DAMAGE)
+
+        # 2. Spider-Man Web Attack on Left Click (-5 Hearts)
+        if mouse_buttons[0] and now - player_last_attack > ATTACK_COOLDOWN:
+            player_last_attack = now
+            if dist_to_target < spider_ATTACK_RANGE:
+                enemy_health = max(0, enemy_health - HEART_DAMAGE)
+
+        # Check Win/Loss conditions
+        if player_health <= 0 or enemy_health <= 0:
+            game_over = True
+
+    # ============================= Rendering =======================================
+    screen.blit(bg_img, (0, 0))
+
+    # Draw Characters
+    screen.blit(spider_img, (player_x, player_y))
+    screen.blit(gg_img, (enemy_x, enemy_y))
+
+    # Draw Health Bars
+    draw_health_bar(player_x, player_y, player_health, "Spider-Man")
+    draw_health_bar(enemy_x, enemy_y, enemy_health, "Goblin")
+
+    # Draw Web Attack Line when Spider-Man fires
+    if mouse_buttons[0] and now - player_last_attack < 100 and dist_to_target < spider_ATTACK_RANGE:
+        pygame.draw.line(screen, (255, 255, 255), (player_x + 50, player_y + 50), (enemy_x + 50, enemy_y + 50), 4)
+
+    # Game Over Screen
+    if game_over:
+        winner = "GREEN GOBLIN" if player_health <= 0 else "SPIDER-MAN"
+        text = font.render(f"{winner} WINS!", True, (255, 255, 255))
+        text_rect = text.get_rect(center=(SCREEN_WIDTH // 2, SCREEN_HEIGHT // 2))
+        screen.blit(text, text_rect)
+
+    pygame.display.flip()
+    clock.tick(60)
+
 import sys
 import pygame
 from os.path import join
