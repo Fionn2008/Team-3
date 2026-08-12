@@ -1,147 +1,198 @@
-import pygame
-import sys
-from os.path import join
+import pygame  
+import sys  
+from os.path import join  
+  
+# Initialize Pygame  
+pygame.init()  
+  
+# Screen setup  
+SCREEN_WIDTH = 1280  
+SCREEN_HEIGHT = 720  
+screen = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT))  
+pygame.display.set_caption("Spiderman - Far From Dublin")  
+  
+# Player settings (Conor - AI enemy)  
+player_size = 100  
+player_speed = 3          # slightly slower than Spiderman so he's chaseable/escapable  
+player_x = 100  
+player_y = 400  
+  
+# Player2 settings (Spiderman - controlled by WASD)  
+player2_size = 100  
+player2_speed = 5  
+player2_x = SCREEN_WIDTH - 200  
+player2_y = 400  
+  
+# Health settings  
+MAX_HEALTH = 100  
+player_health = MAX_HEALTH  
+player2_health = MAX_HEALTH  
+  
+CONOR_ATTACK_DAMAGE = 5         # Conor now does half as much damage  
+SPIDERMAN_ATTACK_DAMAGE = 10    # Spiderman keeps his original damage  
+CONOR_ATTACK_RANGE = 120        # Conor's (shorter) attack range  
+SPIDERMAN_ATTACK_RANGE = 200    # Spiderman's (longer) attack range  
+ATTACK_COOLDOWN = 500           # milliseconds between attacks  
 
-# Initialize Pygame
-pygame.init()
+# Knockback settings
+KNOCKBACK_DISTANCE = 80         # how far a character gets knocked back on hit
+KNOCKBACK_DURATION = 150        # milliseconds the knockback lasts
 
-# Screen setup
-SCREEN_WIDTH = 1280
-SCREEN_HEIGHT = 720
-screen = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT))
-pygame.display.set_caption("Spiderman - Far From Dublin")
+player_last_attack = 0  
+player2_last_attack = 0  
 
-# Player settings (Conor - AI enemy)
-player_size = 100
-player_speed = 3          # slightly slower than Spiderman so he's chaseable/escapable
-player_x = 100
-player_y = 400
-
-# Player2 settings (Spiderman - controlled by arrow keys)
-player2_size = 100
-player2_speed = 5
-player2_x = SCREEN_WIDTH - 200
-player2_y = 400
-
-# Health settings
-MAX_HEALTH = 100
-player_health = MAX_HEALTH
-player2_health = MAX_HEALTH
-
-ATTACK_DAMAGE = 10
-CONOR_ATTACK_RANGE = 120       # Conor's (shorter) attack range
-SPIDERMAN_ATTACK_RANGE = 200   # Spiderman's (longer) attack range
-ATTACK_COOLDOWN = 500          # milliseconds between attacks
-
-player_last_attack = 0
-player2_last_attack = 0
-
-# Load images
-player_img = pygame.image.load(join("Kyle folder", "images", "conor.png")).convert_alpha()
-rect = player_img.get_bounding_rect()
-player_img = player_img.subsurface(rect).copy()
-player_img = pygame.transform.scale(player_img, (100, 100))
-
-player2_img = pygame.image.load(join("Kyle folder", "images", "spooderman.png")).convert_alpha()
-rect = player2_img.get_bounding_rect()
-player2_img = player2_img.subsurface(rect).copy()
-player2_img = pygame.transform.scale(player2_img, (100, 100))
-
-bg_img = pygame.image.load(join("Kyle folder", "images", "cage2.png")).convert()
-bg_img = pygame.transform.scale(bg_img, (SCREEN_WIDTH, SCREEN_HEIGHT))
-
-# Font for game over text
+# Knockback state: (vel_x, vel_y, end_time)
+player_knockback = (0, 0, 0)    # Conor's knockback
+player2_knockback = (0, 0, 0)   # Spiderman's knockback
+  
+# Load images  
+player_img = pygame.image.load(join("Kyle folder", "images", "conor.png")).convert_alpha()  
+rect = player_img.get_bounding_rect()  
+player_img = player_img.subsurface(rect).copy()  
+player_img = pygame.transform.scale(player_img, (100, 100))  
+  
+player2_img = pygame.image.load(join("Kyle folder", "images", "spooderman.png")).convert_alpha()  
+rect = player2_img.get_bounding_rect()  
+player2_img = player2_img.subsurface(rect).copy()  
+player2_img = pygame.transform.scale(player2_img, (100, 100))  
+  
+bg_img = pygame.image.load(join("Kyle folder", "images", "cage2.png")).convert()  
+bg_img = pygame.transform.scale(bg_img, (SCREEN_WIDTH, SCREEN_HEIGHT))  
+  
+# Fonts
 font = pygame.font.SysFont(None, 74)
+health_font = pygame.font.SysFont(None, 24)
 
 
-def draw_health_bar(x, y, health):
-    """Draws a health bar above a player."""
-    bar_width = 100
-    bar_height = 12
-    fill = int(bar_width * (health / MAX_HEALTH))
+def draw_health_bar(x, y, health):  
+    """Draws a health bar with numerical health value displayed inside the bar."""  
+    bar_width = 100  
+    bar_height = 18   # slightly taller so the number fits comfortably
+    fill = int(bar_width * (health / MAX_HEALTH))  
+  
+    pygame.draw.rect(screen, (255, 0, 0), (x, y - 22, bar_width, bar_height))  
+    pygame.draw.rect(screen, (0, 255, 0), (x, y - 22, fill, bar_height))  
+    pygame.draw.rect(screen, (0, 0, 0), (x, y - 22, bar_width, bar_height), 2)
 
-    pygame.draw.rect(screen, (255, 0, 0), (x, y - 20, bar_width, bar_height))
-    pygame.draw.rect(screen, (0, 255, 0), (x, y - 20, fill, bar_height))
-    pygame.draw.rect(screen, (0, 0, 0), (x, y - 20, bar_width, bar_height), 2)
+    # Numerical health value centred inside the bar
+    hp_text = health_font.render(str(int(health)), True, (255, 255, 255))
+    hp_rect = hp_text.get_rect(center=(x + bar_width // 2, y - 22 + bar_height // 2))
+    screen.blit(hp_text, hp_rect)
+  
+  
+def get_distance(x1, y1, x2, y2):  
+    return ((x1 - x2) ** 2 + (y1 - y2) ** 2) ** 0.5  
 
 
-def get_distance(x1, y1, x2, y2):
-    return ((x1 - x2) ** 2 + (y1 - y2) ** 2) ** 0.5
+def calc_knockback(attacker_x, attacker_y, victim_x, victim_y, distance, kb_dist, kb_duration, now):
+    """Returns a knockback state tuple (vel_x, vel_y, end_time) away from the attacker."""
+    if distance > 0:
+        dir_x = (victim_x - attacker_x) / distance
+        dir_y = (victim_y - attacker_y) / distance
+    else:
+        dir_x, dir_y = 1, 0  # default push direction if perfectly overlapping
+    # Speed needed to travel kb_dist in kb_duration ms (converted to per-frame at 60 fps)
+    frames = kb_duration / (1000 / 60)
+    vel_x = dir_x * kb_dist / frames
+    vel_y = dir_y * kb_dist / frames
+    return (vel_x, vel_y, now + kb_duration)
 
 
-# Game loop
-clock = pygame.time.Clock()
-game_over = False
+# Game loop  
+clock = pygame.time.Clock()  
+game_over = False  
+  
+while True:  
+    # Events  
+    for event in pygame.event.get():  
+        if event.type == pygame.QUIT:  
+            pygame.quit()  
+            sys.exit()  
+  
+    if not game_over:  
+        keys = pygame.key.get_pressed()  
+        mouse_buttons = pygame.mouse.get_pressed()  # (left, middle, right)
 
-while True:
-    # Events
-    for event in pygame.event.get():
-        if event.type == pygame.QUIT:
-            pygame.quit()
-            sys.exit()
-
-    if not game_over:
-        keys = pygame.key.get_pressed()
-
-        # --- Spiderman movement (arrow keys) ---
-        if keys[pygame.K_LEFT]:
-            player2_x -= player2_speed
-        if keys[pygame.K_RIGHT]:
-            player2_x += player2_speed
-        if keys[pygame.K_UP]:
-            player2_y -= player2_speed
-        if keys[pygame.K_DOWN]:
-            player2_y += player2_speed
-
-        # --- Conor AI: chase Spiderman ---
-        dx = player2_x - player_x
-        dy = player2_y - player_y
-        dist_to_target = get_distance(player_x, player_y, player2_x, player2_y)
-
-        if dist_to_target > 1:  # avoid division by zero / jitter when overlapping
-            dir_x = dx / dist_to_target
-            dir_y = dy / dist_to_target
-            player_x += dir_x * player_speed
-            player_y += dir_y * player_speed
-
-        # Keep players on screen
-        player_x = max(0, min(player_x, SCREEN_WIDTH - player_size))
-        player_y = max(0, min(player_y, SCREEN_HEIGHT - player_size))
-
-        player2_x = max(0, min(player2_x, SCREEN_WIDTH - player2_size))
-        player2_y = max(0, min(player2_y, SCREEN_HEIGHT - player2_size))
-
-        # --- Attacks ---
         now = pygame.time.get_ticks()
-        distance = get_distance(player_x, player_y, player2_x, player2_y)
 
-        # Conor auto-attacks whenever Spiderman is in range
-        if distance < CONOR_ATTACK_RANGE and now - player_last_attack > ATTACK_COOLDOWN:
-            player_last_attack = now
-            player2_health = max(0, player2_health - ATTACK_DAMAGE)
+        # --- Apply knockback before movement ---
+        if now < player_knockback[2]:
+            player_x += player_knockback[0]
+            player_y += player_knockback[1]
 
-        # Spiderman attacks with RIGHT CTRL
-        if keys[pygame.K_RCTRL] and now - player2_last_attack > ATTACK_COOLDOWN:
+        if now < player2_knockback[2]:
+            player2_x += player2_knockback[0]
+            player2_y += player2_knockback[1]
+  
+        # --- Spiderman movement (WASD) - only when NOT being knocked back ---
+        if now >= player2_knockback[2]:
+            if keys[pygame.K_a]:  
+                player2_x -= player2_speed  
+            if keys[pygame.K_d]:  
+                player2_x += player2_speed  
+            if keys[pygame.K_w]:  
+                player2_y -= player2_speed  
+            if keys[pygame.K_s]:  
+                player2_y += player2_speed  
+  
+        # --- Conor AI: chase Spiderman (only when NOT being knocked back) ---
+        if now >= player_knockback[2]:
+            dx = player2_x - player_x  
+            dy = player2_y - player_y  
+            dist_to_target = get_distance(player_x, player_y, player2_x, player2_y)  
+  
+            if dist_to_target > 1:
+                dir_x = dx / dist_to_target  
+                dir_y = dy / dist_to_target  
+                player_x += dir_x * player_speed  
+                player_y += dir_y * player_speed  
+  
+        # Keep players on screen  
+        player_x = max(0, min(player_x, SCREEN_WIDTH - player_size))  
+        player_y = max(0, min(player_y, SCREEN_HEIGHT - player_size))  
+  
+        player2_x = max(0, min(player2_x, SCREEN_WIDTH - player2_size))  
+        player2_y = max(0, min(player2_y, SCREEN_HEIGHT - player2_size))  
+  
+        # --- Attacks ---
+        distance = get_distance(player_x, player_y, player2_x, player2_y)  
+  
+        # Conor auto-attacks whenever Spiderman is in range  
+        if distance < CONOR_ATTACK_RANGE and now - player_last_attack > ATTACK_COOLDOWN:  
+            player_last_attack = now  
+            player2_health = max(0, player2_health - CONOR_ATTACK_DAMAGE)
+            # Knock Spiderman back away from Conor
+            player2_knockback = calc_knockback(
+                player_x, player_y, player2_x, player2_y, distance,
+                KNOCKBACK_DISTANCE, KNOCKBACK_DURATION, now
+            )
+  
+        # Spiderman attacks with LEFT CLICK
+        if mouse_buttons[0] and distance < SPIDERMAN_ATTACK_RANGE and now - player2_last_attack > ATTACK_COOLDOWN:
             player2_last_attack = now
-            if distance < SPIDERMAN_ATTACK_RANGE:
-                player_health = max(0, player_health - ATTACK_DAMAGE)
+            player_health = max(0, player_health - SPIDERMAN_ATTACK_DAMAGE)
+            # Knock Conor back away from Spiderman
+            player_knockback = calc_knockback(
+                player2_x, player2_y, player_x, player_y, distance,
+                KNOCKBACK_DISTANCE, KNOCKBACK_DURATION, now
+            )
 
-        if player_health <= 0 or player2_health <= 0:
-            game_over = True
-
-    # Draw everything
-    screen.blit(bg_img, (0, 0))
-    screen.blit(player_img, (player_x, player_y))
-    screen.blit(player2_img, (player2_x, player2_y))
-
-    draw_health_bar(player_x, player_y, player_health)
-    draw_health_bar(player2_x, player2_y, player2_health)
-
-    if game_over:
-        winner = "THE NOTORIOUS CONOR MCGREGOR" if player2_health <= 0 else "SPUDERMAN"
-        text = font.render(f"{winner} Wins!", True, (255, 255, 255))
-        text_rect = text.get_rect(center=(SCREEN_WIDTH // 2, SCREEN_HEIGHT // 2))
-        screen.blit(text, text_rect)
-
-    pygame.display.flip()
+        if player_health <= 0 or player2_health <= 0:  
+            game_over = True  
+  
+    # Draw everything  
+    screen.blit(bg_img, (0, 0))  
+    screen.blit(player_img, (player_x, player_y))  
+    screen.blit(player2_img, (player2_x, player2_y))  
+  
+    draw_health_bar(player_x, player_y, player_health)  
+    draw_health_bar(player2_x, player2_y, player2_health)  
+  
+    if game_over:  
+        winner = "THE NOTORIOUS CONOR MCGREGOR" if player2_health <= 0 else "SPUDERMAN"  
+        text = font.render(f"{winner} Wins!", True, (255, 255, 255))  
+        text_rect = text.get_rect(center=(SCREEN_WIDTH // 2, SCREEN_HEIGHT // 2))  
+        screen.blit(text, text_rect)  
+  
+    pygame.display.flip()  
     clock.tick(60)
