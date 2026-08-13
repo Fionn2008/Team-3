@@ -41,7 +41,7 @@ bomb_img = pygame.image.load(join("vedha", "images", "bomborange.png")).convert_
 bomb_img = pygame.transform.scale(bomb_img, (100, 100))
 
 web_img = pygame.image.load(join("vedha", "images", "web.png")).convert_alpha()
-web_img = pygame.transform.scale(web_img, (100, 100))  # Resized web dimensions
+web_img = pygame.transform.scale(web_img, (40, 20))  # Resized web dimensions
 
 webs = []
 
@@ -52,7 +52,7 @@ player1_rect = player1_img.get_rect(midbottom=(200, 500))
 player2_rect = player2_img.get_rect(midbottom=(820, 500))
 
 p1_lives = 3
-p2_lives = 10
+p2_lives = 5
 font = pygame.font.SysFont("Arial", 40, bold=True)
 game_over = False
 winner_text = ""
@@ -60,12 +60,12 @@ winner_text = ""
 # Bomb list & Timer
 bombs = []
 BOMB_EVENT = pygame.USEREVENT + 1
-pygame.time.set_timer(BOMB_EVENT, 800)
+pygame.time.set_timer(BOMB_EVENT, 1500)
 
 # Game loop
 clock = pygame.time.Clock()
 player1_speed = 5
-ai_speed = 10
+ai_speed = 3
 
 running = True
 while running:
@@ -81,7 +81,7 @@ while running:
                 distance = (dx**2 + dy**2) ** 0.5
 
                 if distance != 0:
-                    web_speed = 7
+                    web_speed = 10
                     vx = (dx / distance) * web_speed
                     vy = (dy / distance) * web_speed
 
@@ -98,7 +98,7 @@ while running:
             distance = (dx**2 + dy**2) ** 0.5
             
             if distance != 0:
-                bomb_speed = 18
+                bomb_speed = 7
                 vel_x = (dx / distance) * bomb_speed
                 vel_y = (dy / distance) * bomb_speed
                 
@@ -186,7 +186,9 @@ while running:
     for w in webs:
         screen.blit(web_img, w['rect'])
 
-
+    # --- DRAW LIVES HUD ---
+    lives_text = font.render(f"Lives: {'♥ ' * p1_lives}", True, (255, 0, 0))
+    screen.blit(lives_text, (20, 20))
 
     # --- DRAW GAME OVER TEXT ---
     if game_over:
@@ -213,13 +215,10 @@ while running:
     draw_character_health(player1_rect, p1_lives, 3, (0, 255, 0))
 
     # Draw Doc Ock's health bar
-    draw_character_health(player2_rect, p2_lives, 10, (255, 0, 0))
+    draw_character_health(player2_rect, p2_lives, 5, (255, 0, 0))
 
     pygame.display.flip()
     clock.tick(60)
 
 pygame.quit()
 sys.exit()
-
-
-     
