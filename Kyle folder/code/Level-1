@@ -46,7 +46,7 @@ player_knockback = (0, 0, 0)    # Conor's knockback
 player2_knockback = (0, 0, 0)   # Spiderman's knockback
   
 # Load images  
-player_img = pygame.image.load(join("Kyle folder", "images", "conor.png")).convert_alpha()  
+player_img = pygame.image.load(join("Kyle folder", "images", "conor2.0.png")).convert_alpha()  
 rect = player_img.get_bounding_rect()  
 player_img = player_img.subsurface(rect).copy()  
 player_img = pygame.transform.scale(player_img, (100, 100))  
