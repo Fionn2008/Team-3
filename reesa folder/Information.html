@@ -1,16 +1,14 @@
-
 <!DOCTYPE html>
 <html>
     <head>
         <meta charset="utf-8">
         <link rel="stylesheet" href="style.css">
         <link rel="stylesheet" href="information.css">
-        <link rel="icon" type="image/x-icon" href=", AI generated.png">
-    </head>
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+        <link rel="icon" type="image/png" href="images/AI generated.png">    </head>
     <body>
         <h1><b>Spider-Man: Far From Dublin</b></h1>
 
-       
 <div class="navbar">
   <a href="index.html">Home</a>
   <a href="AboutUs.html">About Us</a>
@@ -25,11 +23,332 @@
       <a href="Level1.html">Level 1</a>
       <a href="Level2.html">Level 2</a>
       <a href="Level3.html">Level 3</a>
+    </div>
+  </div>
+</div>
 
-      <footer>
-  <p>Author: Hege Refsnes</p>
-  <p><a href="mailto:hege@example.com">hege@example.com</a></p>
+<!-- HOW TO PLAY -->
+
+    <section class="how-to-play">
+
+        <h2>HOW TO PLAY</h2>
+
+        <p class="intro">
+            Welcome to Spider-Man: Far From Dublin!
+            Follow the instructions below to learn how to play the game.
+        </p>
+
+
+        <div class="instructions">
+
+
+            <div class="instruction">
+
+                <i class="fas fa-gamepad"></i>
+
+                <h3>1. MOVE</h3>
+
+                <p>
+                    Use the <b>WASD keys</b> or the
+                    <b>arrow keys</b> to move Spider-Man around the level.
+                </p>
+
+            </div>
+
+
+            <div class="instruction">
+
+                <i class="fas fa-fist-raised"></i>
+
+                <h3>2. ATTACK</h3>
+
+                <p>
+                    Use your attacks to defeat enemies
+                    and clear your way through Dublin.
+                </p>
+
+            </div>
+
+
+            <div class="instruction">
+
+                <i class="fas fa-spider"></i>
+
+                <h3>3. USE YOUR POWERS</h3>
+
+                <p>
+                    Use Spider-Man's special abilities
+                    to overcome obstacles and enemies.
+                </p>
+
+            </div>
+
+
+            <div class="instruction">
+
+                <i class="fas fa-heart"></i>
+
+                <h3>4. WATCH YOUR HEALTH</h3>
+
+                <p>
+                    Avoid enemy attacks and keep an eye
+                    on your health throughout the level.
+                </p>
+
+            </div>
+
+
+        </div>
+
+    </section>
+
+    <!-- ==============================
+     GAME AI CHATBOX
+============================== -->
+
+<section class="game-chat">
+
+    <h2>ASK THE GAME AI</h2>
+
+    <p>
+        Have a question about Spider-Man: Far From Dublin?
+        Ask the Game AI!
+    </p>
+
+    <div class="chat-box">
+
+        <div id="chat-messages" class="chat-messages">
+            <div class="bot-message">
+                🕷️ <b>Game AI:</b> Hi! Ask me anything about the game,
+                levels, controls or enemies!
+            </div>
+        </div>
+
+        <div class="chat-input">
+
+            <input
+                type="text"
+                id="user-question"
+                placeholder="Ask a question..."
+                onkeydown="if(event.key === 'Enter') askAI()"
+            >
+
+            <button onclick="askAI()">
+                ASK
+            </button>
+
+        </div>
+
+    </div>
+
+</section>
+
+<script>
+
+function askAI() {
+
+    const input = document.getElementById("user-question");
+
+    const question = input.value.trim();
+
+    if (question === "") {
+        return;
+    }
+
+
+    const chat = document.getElementById("chat-messages");
+
+
+    // Add user's question
+
+    const userMessage = document.createElement("div");
+
+    userMessage.className = "user-message";
+
+    userMessage.innerHTML =
+        "<b>You:</b> " + question;
+
+    chat.appendChild(userMessage);
+
+
+    // Get answer
+
+    const answer = getAnswer(question);
+
+
+    // Add AI answer
+
+    const botMessage = document.createElement("div");
+
+    botMessage.className = "bot-message";
+
+    botMessage.innerHTML =
+        "🕷️ <b>Game AI:</b> " + answer;
+
+    chat.appendChild(botMessage);
+
+
+    // Clear input
+
+    input.value = "";
+
+
+    // Scroll to latest message
+
+    chat.scrollTop = chat.scrollHeight;
+}
+
+
+
+function getAnswer(question) {
+
+    question = question.toLowerCase();
+
+
+    if (
+        question.includes("game") ||
+        question.includes("what is this")
+    ) {
+
+        return "Spider-Man: Far From Dublin is a game set in Dublin where you play as Spuder-Man and battle enemies while completing different levels.";
+
+    }
+
+
+    if (
+        question.includes("move") ||
+        question.includes("controls") ||
+        question.includes("keys")
+    ) {
+
+        return "Use WASD or the arrow keys to move your character around the level.";
+
+    }
+
+
+    if (
+        question.includes("attack") ||
+        question.includes("fight")
+    ) {
+
+        return "Use your attack controls to defeat enemies and clear your way through the level.";
+
+    }
+
+
+    if (
+        question.includes("level 1") ||
+        question.includes("level one")
+    ) {
+
+        return "Level 1 is the first challenge.Spuder-Man has to face Conor Mc Gregor in an underground cage. Learn the controls and use the attack features to advance to the next level and save Ireland from chaos.";
+
+    }
+
+
+    if (
+        question.includes("level 2") ||
+        question.includes("level two")
+    ) {
+
+        return "Level 2 takes place in a forest where Spuder-Man encounters the Green Goblin after the portal from New York to Dublin has been hacked, which has led to villians entering Ireland.";
+
+    }
+
+
+    if (
+        question.includes("level 3") ||
+        question.includes("level three")
+    ) {
+
+        return "Level 3 is the final challenge.Spuder-Man now enters New York through the portal in order to save Ireland. The fianl battle occurs on the Brooklyn Bridge against Doc Ock. ";
+
+    }
+
+
+    if (
+        question.includes("enemy") ||
+        question.includes("enemies")
+    ) {
+
+        return "Watch out for enemies throughout the levels. Avoid their attacks and defeat them to progress.As the levels progress, the enemy becomes increaingly harder to defeat.The enemies include Conor Mc Gregor,Green Goblin and Doc Ock";
+
+    }
+
+
+    if (
+        question.includes("spider-man") ||
+        question.includes("spiderman")
+    ) {
+
+        return "You play as Spuder-Man as he travels through Dublin, fights enemies and completes the different levels.";
+
+    }
+
+
+    if (
+        question.includes("win") ||
+        question.includes("finish") ||
+        question.includes("complete")
+    ) {
+
+        return "Complete the level by overcoming the enemies and obstacles and reaching the end.";
+
+    }
+
+
+    if (
+        question.includes("dublin")
+    ) {
+
+        return "The game takes place in Dublin, with the city providing the setting for Spider-Man's adventure.";
+
+    }
+
+
+    if (
+        question.includes("hello") ||
+        question.includes("hi")
+    ) {
+
+        return "Hello! 🕷️ I'm the Spider-Man: Far From Dublin Game AI. What would you like to know?";
+
+    }
+
+
+    return "I'm not sure about that yet! Try asking me about the controls, levels, enemies, Spider-Man, Dublin or how to win.";
+
+}
+
+</script>
+
+    <!-- BACK TO TOP -->
+    <a href="#" class="back-to-top">
+        🕷 Back to Top
+    </a>
+
+<footer>
+    <p>© 2026 Spider-Man: Far From Dublin</p>
+
+    <div class="social-icons">
+        <a href="https://www.instagram.com/spiderman_farfromdublin/" aria-label="Instagram">
+            <i class="fab fa-instagram"></i>
+        </a>
+
+        <a href="#" aria-label="TikTok">
+            <i class="fab fa-tiktok"></i>
+        </a>
+
+        <a href="#" aria-label="Facebook">
+            <i class="fab fa-facebook"></i>
+        </a>
+
+        <a href="#" aria-label="YouTube">
+            <i class="fab fa-youtube"></i>
+        </a>
+    </div>
 </footer>
-   
-   </body>
+
+
+</body>
 </html>
