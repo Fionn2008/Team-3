@@ -1,5 +1,6 @@
 import pygame
 import sys
+import random
 from os.path import join
 
 # Initialize Pygame
@@ -11,40 +12,55 @@ SCREEN_HEIGHT = 720
 screen = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT))
 pygame.display.set_caption("Spiderman - Far From Dublin")
 
+# Fixed ground level — both characters are locked to this Y position
+GROUND_Y = 450
+
 # Player settings (Conor - AI enemy)
 player_size = 100
-player_speed = 3          # slightly slower than Spiderman so he's chaseable/escapable
+player_speed = 3
 player_x = 100
-player_y = 400
+player_y = GROUND_Y
 
 # Player2 settings (Spiderman - controlled by WASD)
 player2_size = 100
 player2_speed = 5
 player2_x = SCREEN_WIDTH - 200
-player2_y = 400
+player2_y = GROUND_Y
 
 # Health settings
 MAX_HEALTH = 100
 player_health = MAX_HEALTH
 player2_health = MAX_HEALTH
 
-CONOR_ATTACK_DAMAGE = 5         # Conor does half as much damage
-SPIDERMAN_ATTACK_DAMAGE = 10    # Spiderman keeps his original damage
-CONOR_ATTACK_RANGE = 120        # Conor's (shorter) attack range
-SPIDERMAN_ATTACK_RANGE = 200    # Spiderman's (longer) attack range
-ATTACK_COOLDOWN = 500           # milliseconds between attacks
+CONOR_ATTACK_DAMAGE = 5
+SPIDERMAN_ATTACK_DAMAGE = 10
+CONOR_ATTACK_RANGE = 120
+SPIDERMAN_ATTACK_RANGE = 200
+ATTACK_COOLDOWN = 500
 
-# Knockback settings — Conor flies back further when hit
-CONOR_KNOCKBACK_DISTANCE = 160  # double knockback for Conor
+# Knockback settings
+CONOR_KNOCKBACK_DISTANCE = 160
 SPIDERMAN_KNOCKBACK_DISTANCE = 80
-KNOCKBACK_DURATION = 150        # milliseconds the knockback lasts (shared)
+KNOCKBACK_DURATION = 150
+
+# Chicken fillet roll (health pickup) settings
+ROLL_SIZE = 80                  # enlarged from 50
+ROLL_HEAL_AMOUNT = 25           # how much health the chicken fillet roll restores
+ROLL_SPAWN_INTERVAL = 2000      # ms between chicken fillet roll spawns
+roll_active = False
+roll_x = 0
+roll_y = 0
+roll_last_spawn = -ROLL_SPAWN_INTERVAL  # spawn one shortly after game starts
+
+# Glow animation state
+roll_glow_tick = 0              # increments each frame to drive the pulse
 
 player_last_attack = 0
 player2_last_attack = 0
 
 # Knockback state: (vel_x, vel_y, end_time)
-player_knockback = (0, 0, 0)    # Conor's knockback
-player2_knockback = (0, 0, 0)   # Spiderman's knockback
+player_knockback = (0, 0, 0)
+player2_knockback = (0, 0, 0)
 
 # Game state
 START = "start"
@@ -67,11 +83,15 @@ player2_img = pygame.transform.scale(player2_img, (100, 100))
 bg_img = pygame.image.load(join("Kyle folder", "images", "cage2.png")).convert()
 bg_img = pygame.transform.scale(bg_img, (SCREEN_WIDTH, SCREEN_HEIGHT))
 
+roll_img = pygame.image.load(join("Kyle folder", "images", "cfr.png")).convert_alpha()
+roll_img = pygame.transform.scale(roll_img, (ROLL_SIZE, ROLL_SIZE))
+
 # Fonts
-font        = pygame.font.SysFont(None, 74)
+font          = pygame.font.SysFont(None, 74)
 subtitle_font = pygame.font.SysFont(None, 42)
-info_font   = pygame.font.SysFont(None, 36)
-health_font = pygame.font.SysFont(None, 24)
+info_font     = pygame.font.SysFont(None, 36)
+health_font   = pygame.font.SysFont(None, 24)
+button_font   = pygame.font.SysFont(None, 48)
 
 
 # ---------------------------------------------------------------------------
@@ -84,9 +104,9 @@ def draw_health_bar(x, y, health):
     bar_height = 18
     fill = int(bar_width * (health / MAX_HEALTH))
 
-    pygame.draw.rect(screen, (255, 0, 0), (x, y - 22, bar_width, bar_height))
-    pygame.draw.rect(screen, (0, 255, 0), (x, y - 22, fill, bar_height))
-    pygame.draw.rect(screen, (0, 0, 0), (x, y - 22, bar_width, bar_height), 2)
+    pygame.draw.rect(screen, (255, 0, 0),   (x, y - 22, bar_width, bar_height))
+    pygame.draw.rect(screen, (0, 255, 0),   (x, y - 22, fill, bar_height))
+    pygame.draw.rect(screen, (0, 0, 0),     (x, y - 22, bar_width, bar_height), 2)
 
     hp_text = health_font.render(str(int(health)), True, (255, 255, 255))
     hp_rect = hp_text.get_rect(center=(x + bar_width // 2, y - 22 + bar_height // 2))
@@ -98,23 +118,61 @@ def get_distance(x1, y1, x2, y2):
 
 
 def calc_knockback(attacker_x, attacker_y, victim_x, victim_y, distance, kb_dist, kb_duration, now):
-    """Returns a knockback state tuple (vel_x, vel_y, end_time) away from the attacker."""
-    if distance > 0:
-        dir_x = (victim_x - attacker_x) / distance
-        dir_y = (victim_y - attacker_y) / distance
-    else:
-        dir_x, dir_y = 1, 0
+    """Returns a knockback state tuple (vel_x, vel_y, end_time) — horizontal only."""
+    # Only push left or right depending on which side the victim is on
+    dir_x = 1 if victim_x >= attacker_x else -1
     frames = kb_duration / (1000 / 60)
     vel_x = dir_x * kb_dist / frames
-    vel_y = dir_y * kb_dist / frames
-    return (vel_x, vel_y, now + kb_duration)
+    return (vel_x, 0, now + kb_duration)  # vel_y always 0
 
 
-def draw_centered_text(text, font, color, y):
+def draw_centered_text(text, fnt, color, y):
     """Renders text centred horizontally at the given y position."""
-    surface = font.render(text, True, color)
-    rect = surface.get_rect(center=(SCREEN_WIDTH // 2, y))
-    screen.blit(surface, rect)
+    surface = fnt.render(text, True, color)
+    r = surface.get_rect(center=(SCREEN_WIDTH // 2, y))
+    screen.blit(surface, r)
+
+
+def draw_button(text, cx, cy, w, h, color, hover_color, mouse_pos):
+    """Draws a rectangular button and returns its Rect."""
+    btn_rect = pygame.Rect(cx - w // 2, cy - h // 2, w, h)
+    col = hover_color if btn_rect.collidepoint(mouse_pos) else color
+    pygame.draw.rect(screen, col, btn_rect, border_radius=10)
+    pygame.draw.rect(screen, (0, 0, 0), btn_rect, 2, border_radius=10)
+    label = button_font.render(text, True, (0, 0, 0))
+    label_rect = label.get_rect(center=(cx, cy))
+    screen.blit(label, label_rect)
+    return btn_rect
+
+
+def spawn_roll():
+    """Returns a random X position along the ground line for the chicken fillet roll."""
+    x = random.randint(80, SCREEN_WIDTH - 80 - ROLL_SIZE)
+    y = GROUND_Y + player_size - ROLL_SIZE  # sit on the same ground level as the fighters
+    return x, y
+
+
+def reset_game():
+    """Resets all mutable game state back to starting values."""
+    global player_x, player_y, player2_x, player2_y
+    global player_health, player2_health
+    global player_last_attack, player2_last_attack
+    global player_knockback, player2_knockback
+    global game_over, roll_active, roll_x, roll_y, roll_last_spawn, roll_glow_tick
+
+    player_x, player_y = 100, GROUND_Y
+    player2_x, player2_y = SCREEN_WIDTH - 200, GROUND_Y
+    player_health = MAX_HEALTH
+    player2_health = MAX_HEALTH
+    player_last_attack = 0
+    player2_last_attack = 0
+    player_knockback = (0, 0, 0)
+    player2_knockback = (0, 0, 0)
+    game_over = False
+    roll_active = False
+    roll_x, roll_y = 0, 0
+    roll_last_spawn = -ROLL_SPAWN_INTERVAL
+    roll_glow_tick = 0
 
 
 def draw_start_screen():
@@ -128,8 +186,10 @@ def draw_info_screen():
     draw_centered_text("How to Play", font, (255, 0, 0), 120)
 
     instructions = [
-        "WASD  —  Move Spiderman",
+        "A / D  —  Move Spiderman left and right",
         "Left Click  —  Attack (must be in range)",
+        "",
+        "Collect the chicken fillet roll to restore 25 health",
         "",
         "Conor will chase and auto-attack you",
         "Reduce your opponent's health to 0 to win",
@@ -139,9 +199,25 @@ def draw_info_screen():
     ]
 
     for i, line in enumerate(instructions):
-        draw_centered_text(line, info_font, (220, 220, 220), 230 + i * 44)
+        draw_centered_text(line, info_font, (220, 220, 220), 220 + i * 42)
 
     draw_centered_text("Press ENTER to Fight!", subtitle_font, (255, 255, 0), SCREEN_HEIGHT - 80)
+
+
+def draw_roll_glow(x, y, tick):
+    """Draws a pulsing green glow behind the chicken fillet roll."""
+    import math
+    # Pulse: radius oscillates between 48 and 64 px
+    pulse = int(48 + 16 * math.sin(tick * 0.08))
+    glow_surf = pygame.Surface((pulse * 2, pulse * 2), pygame.SRCALPHA)
+    # Draw several concentric circles fading outward for a soft glow effect
+    for i in range(6, 0, -1):
+        radius = int(pulse * i / 6)
+        alpha  = int(120 * (i / 6))        # brighter in the centre
+        pygame.draw.circle(glow_surf, (80, 255, 80, alpha), (pulse, pulse), radius)
+    cx = x + ROLL_SIZE // 2
+    cy = y + ROLL_SIZE // 2
+    screen.blit(glow_surf, (cx - pulse, cy - pulse))
 
 
 # ---------------------------------------------------------------------------
@@ -150,6 +226,8 @@ def draw_info_screen():
 clock = pygame.time.Clock()
 
 while True:
+    mouse_pos = pygame.mouse.get_pos()
+
     # ---- Event handling ----
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
@@ -162,6 +240,17 @@ while True:
                     game_state = INFO
                 elif game_state == INFO:
                     game_state = PLAYING
+
+        # Restart button click (only relevant on game over screen)
+        if event.type == pygame.MOUSEBUTTONDOWN and event.button == 1:
+            if game_state == PLAYING and game_over:
+                restart_rect = pygame.Rect(
+                    SCREEN_WIDTH // 2 - 110,
+                    SCREEN_HEIGHT // 2 + 60,
+                    220, 55
+                )
+                if restart_rect.collidepoint(mouse_pos):
+                    reset_game()
 
     # ---- START screen ----
     if game_state == START:
@@ -193,34 +282,40 @@ while True:
             player2_x += player2_knockback[0]
             player2_y += player2_knockback[1]
 
-        # Spiderman movement (WASD) — only when NOT being knocked back
+        # Spiderman movement (A/D only) — only when NOT being knocked back
         if now >= player2_knockback[2]:
             if keys[pygame.K_a]:
                 player2_x -= player2_speed
             if keys[pygame.K_d]:
                 player2_x += player2_speed
-            if keys[pygame.K_w]:
-                player2_y -= player2_speed
-            if keys[pygame.K_s]:
-                player2_y += player2_speed
+        # Y is always locked to ground
+        player2_y = GROUND_Y
 
-        # Conor AI: chase Spiderman — only when NOT being knocked back
+        # Conor AI: chase Spiderman horizontally only — only when NOT being knocked back
         if now >= player_knockback[2]:
             dx = player2_x - player_x
-            dy = player2_y - player_y
-            dist_to_target = get_distance(player_x, player_y, player2_x, player2_y)
+            if dx != 0:
+                player_x += (dx / abs(dx)) * player_speed  # move left or right only
+        # Y is always locked to ground
+        player_y = GROUND_Y
 
-            if dist_to_target > 1:
-                dir_x = dx / dist_to_target
-                dir_y = dy / dist_to_target
-                player_x += dir_x * player_speed
-                player_y += dir_y * player_speed
-
-        # Keep players on screen
-        player_x = max(0, min(player_x, SCREEN_WIDTH - player_size))
-        player_y = max(0, min(player_y, SCREEN_HEIGHT - player_size))
+        # Keep players on screen (horizontal only — Y is locked to ground)
+        player_x  = max(0, min(player_x,  SCREEN_WIDTH - player_size))
         player2_x = max(0, min(player2_x, SCREEN_WIDTH - player2_size))
-        player2_y = max(0, min(player2_y, SCREEN_HEIGHT - player2_size))
+
+        # ---- Chicken fillet roll spawn & collection ----
+        if not roll_active and now - roll_last_spawn >= ROLL_SPAWN_INTERVAL:
+            roll_x, roll_y = spawn_roll()
+            roll_active = True
+
+        if roll_active:
+            # Check if Spiderman walks over the chicken fillet roll
+            roll_rect      = pygame.Rect(roll_x, roll_y, ROLL_SIZE, ROLL_SIZE)
+            spiderman_rect = pygame.Rect(player2_x, player2_y, player2_size, player2_size)
+            if spiderman_rect.colliderect(roll_rect):
+                player2_health = min(MAX_HEALTH, player2_health + ROLL_HEAL_AMOUNT)
+                roll_active = False
+                roll_last_spawn = now   # start the cooldown from now
 
         # Attacks
         distance = get_distance(player_x, player_y, player2_x, player2_y)
@@ -246,19 +341,38 @@ while True:
         if player_health <= 0 or player2_health <= 0:
             game_over = True
 
-    # Draw gameplay
+    # ---- Draw gameplay ----
     screen.blit(bg_img, (0, 0))
-    screen.blit(player_img, (player_x, player_y))
+
+    # Draw chicken fillet roll (glow first, then sprite on top)
+    if roll_active:
+        roll_glow_tick += 1
+        draw_roll_glow(roll_x, roll_y, roll_glow_tick)
+        screen.blit(roll_img, (roll_x, roll_y))
+
+    screen.blit(player_img,  (player_x,  player_y))
     screen.blit(player2_img, (player2_x, player2_y))
 
-    draw_health_bar(player_x, player_y, player_health)
+    draw_health_bar(player_x,  player_y,  player_health)
     draw_health_bar(player2_x, player2_y, player2_health)
 
+    # ---- Game over overlay ----
     if game_over:
+        # Semi-transparent dark overlay
+        overlay = pygame.Surface((SCREEN_WIDTH, SCREEN_HEIGHT), pygame.SRCALPHA)
+        overlay.fill((0, 0, 0, 150))
+        screen.blit(overlay, (0, 0))
+
         winner = "THE NOTORIOUS CONOR MCGREGOR" if player2_health <= 0 else "SPUDERMAN"
-        text = font.render(f"{winner} Wins!", True, (255, 255, 255))
-        text_rect = text.get_rect(center=(SCREEN_WIDTH // 2, SCREEN_HEIGHT // 2))
-        screen.blit(text, text_rect)
+        draw_centered_text(f"{winner} Wins!", font, (255, 255, 255), SCREEN_HEIGHT // 2 - 30)
+
+        # Only show restart button if Spiderman lost
+        if player2_health <= 0:
+            draw_button(
+                "Restart", SCREEN_WIDTH // 2, SCREEN_HEIGHT // 2 + 87,
+                220, 55, (220, 60, 60), (255, 100, 100), mouse_pos
+            )
 
     pygame.display.flip()
     clock.tick(60)
+

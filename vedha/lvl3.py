@@ -1,6 +1,7 @@
 import pygame  
 import sys  
 import random  
+import math  
 from os.path import join  
   
 # Initialize Pygame  
@@ -12,7 +13,7 @@ SCREEN_HEIGHT = 720
 screen = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT))  
 pygame.display.set_caption("Spiderman - Far From Dublin")
 SCREEN_RECT = screen.get_rect()   # cached once — not called every frame
-  
+screen_shake = 0
 # Player settings  
 player1_size = 5  
 player2_size = 5  
@@ -66,7 +67,7 @@ player1_rect = player1_img.get_rect(midbottom=(200, 500))
 player2_rect = player2_img.get_rect(midbottom=(820, 500))  
   
 p1_lives = 50  
-p2_lives = 100  
+p2_lives = 50  
 
 # FIX: fonts created ONCE here, not inside the game loop
 font         = pygame.font.SysFont("Arial", 40, bold=True)
@@ -99,7 +100,7 @@ def draw_character_health(rect, current_lives, max_lives, color):
 def reset_game():  
     global p1_lives, p2_lives, game_over, winner_text, bombs, webs, health_items, is_shooting  
     p1_lives = 50  
-    p2_lives = 100  
+    p2_lives = 50 
     game_over = False  
     winner_text = ""  
     bombs.clear()  
@@ -140,10 +141,13 @@ while running:
             distance = (dx**2 + dy**2) ** 0.5
             if distance != 0:
                 bomb_speed = 18
-                vel_x = (dx / distance) * bomb_speed
-                vel_y = (dy / distance) * bomb_speed
-                new_bomb_rect = bomb_img.get_rect(center=player2_rect.center)
-                bombs.append({'rect': new_bomb_rect, 'vx': vel_x, 'vy': vel_y})
+                base_angle = math.atan2(dy, dx)
+                for angle_offset in (0, math.radians(20), math.radians(-20)):
+                    angle = base_angle + angle_offset
+                    vel_x = math.cos(angle) * bomb_speed
+                    vel_y = math.sin(angle) * bomb_speed
+                    new_bomb_rect = bomb_img.get_rect(center=player2_rect.center)
+                    bombs.append({'rect': new_bomb_rect, 'vx': vel_x, 'vy': vel_y})
 
         if event.type == HEALTH_SPAWN_EVENT and not game_over:
             rand_x = random.randint(50, SCREEN_WIDTH - 50)
@@ -164,7 +168,11 @@ while running:
             if item.colliderect(player1_rect):  
                 p1_lives += 5  
                 health_items.remove(item)  
-  
+        if event.type == HEALTH_SPAWN_EVENT and not game_over:
+            if len(health_items) < 5:
+                rand_x = random.randint(50, SCREEN_WIDTH - 50)
+                rand_y = random.randint(50, SCREEN_HEIGHT - 50)
+                health_items.append(health_img.get_rect(center=(rand_x, rand_y)))
         doc_dx = player1_rect.centerx - player2_rect.centerx  
         doc_dy = player1_rect.centery - player2_rect.centery  
         doc_dist = (doc_dx**2 + doc_dy**2) ** 0.5  
@@ -172,17 +180,22 @@ while running:
             player2_rect.x += int((doc_dx / doc_dist) * ai_speed)  
             player2_rect.y += int((doc_dy / doc_dist) * ai_speed)  
         player2_rect.clamp_ip(SCREEN_RECT)  
-  
+        if p2_lives < 20:
+    # Phase 2: Enraged Doc Ock moves faster and bomb timer quickens
+            current_ai_speed = 5
+        else:
+            current_ai_speed = 3
         if is_shooting:  
             shoot_timer -= 1  
             if shoot_timer <= 0:  
                 is_shooting = False  
-  
+            
         for bomb in bombs[:]:  
             bomb['rect'].x += bomb['vx']  
             bomb['rect'].y += bomb['vy']  
             if bomb['rect'].colliderect(player1_rect):  
-                p1_lives -= 3  
+                p1_lives -= 2 
+                screen_shake = 12
                 bombs.remove(bomb)  
                 if p1_lives <= 0:  
                     game_over = True  
@@ -206,7 +219,12 @@ while running:
 
     # ── draw — also outside event loop, runs exactly once per frame ──
     screen.blit(bg_img, (0, 0))  
-  
+    render_offset = [0, 0]
+    if screen_shake > 0:
+     screen_shake -= 1
+     render_offset[0] = random.randint(-4, 4)
+     render_offset[1] = random.randint(-4, 4)
+     screen.blit(bg_img, render_offset)
     if is_shooting:  
         screen.blit(player1_shoot_img, player1_rect)  
     else:  
@@ -234,7 +252,7 @@ while running:
         screen.blit(restart_text, restart_rect)
   
     draw_character_health(player1_rect, p1_lives, 50,  (0, 255, 0))  
-    draw_character_health(player2_rect, p2_lives, 100, (255, 0, 0))  
+    draw_character_health(player2_rect, p2_lives, 50, (255, 0, 0))  
   
     pygame.display.flip()  
     clock.tick(60)  
