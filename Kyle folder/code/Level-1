@@ -70,7 +70,7 @@ game_state = START
 game_over = False
 
 # Load images
-player_img = pygame.image.load(join("Kyle folder", "images", "conor2.0.png")).convert_alpha()
+player_img = pygame.image.load(join("Kyle folder", "images", "conormcgregor.png")).convert_alpha()
 rect = player_img.get_bounding_rect()
 player_img = player_img.subsurface(rect).copy()
 player_img = pygame.transform.scale(player_img, (100, 100))
