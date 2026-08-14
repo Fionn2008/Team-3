@@ -86,14 +86,11 @@ def get_distance(x1, y1, x2, y2):
 
 
 # =================================== # BACKGROUND IMAGE & ENEMY POSITIONS ===============================================
-
-bg_img = pygame.image.load(join("Shahreen folder/image/image/forest.png.png")).convert()
-bg_img = pygame.transform.scale(bg_img, (SCREEN_WIDTH, SCREEN_HEIGHT))
-
 enemy_positions = []
 for i in range(1):
     enemy_positions.append((randint(0, SCREEN_WIDTH), randint(0, SCREEN_HEIGHT)))
-
+bg_img = pygame.image.load(join("Shahreen folder/image/image/SS.FR.png")).convert()
+bg_img = pygame.transform.scale(bg_img, (SCREEN_WIDTH, SCREEN_HEIGHT))
 
 # ======================================= # Game loop ======================================================================
 
@@ -125,6 +122,7 @@ while True:
             player_y += player_speed
 
         # ==== Enemy movement (Arrow keys) =======================================================
+        
         if keys[pygame.K_LEFT]:
             enemy_x -= enemy_speed
         if keys[pygame.K_RIGHT]:
@@ -135,6 +133,7 @@ while True:
             enemy_y += enemy_speed
 
         # =============================== gg : chase spiderman ==========================================
+        
         dx = player_x - enemy_x
         dy = player_y - enemy_y
         dist_to_target = get_distance(player_x, player_y, enemy_x, enemy_y)
@@ -146,13 +145,27 @@ while True:
             enemy_y += dir_y * (enemy_speed * 0.4)
 
         # ========================= Keep players on screen ==================================
+       
         player_x = max(0, min(player_x, SCREEN_WIDTH - player_size))
         player_y = max(0, min(player_y, SCREEN_HEIGHT - player_size))
                     
         enemy_x = max(0, min(enemy_x, SCREEN_WIDTH - enemy_size))
         enemy_y = max(0, min(enemy_y, SCREEN_HEIGHT - enemy_size))
 
-        # ========================= Attacking ===============================================
+        # ========================= Restrict players to ground area (no sky / trees) ==================================
+        # Ground starts at ~y=320 based on the background image; block both players above this line
+        GROUND_TOP = 320
+        player_y = max(GROUND_TOP, player_y)
+        enemy_y  = max(GROUND_TOP, enemy_y)
+
+        # ========================= Restrict players to ground area (no sky / trees) ==================================
+        # The ground in the background starts at roughly y=320; keep both characters on the grass only
+        GROUND_TOP = 320
+        player_y = max(GROUND_TOP, player_y)
+        enemy_y  = max(GROUND_TOP, enemy_y)
+
+         # ========================= Attacking ===============================================
+        
         distance = get_distance(player_x, player_y, enemy_x, enemy_y)
 
         # Green Goblin (gg) auto-attacks Spiderman whenever in range (-5 hearts)
@@ -170,7 +183,8 @@ while True:
         if player_health <= 0 or enemy_health <= 0:
             game_over = True
 
-    # ============================= Draw everything =======================================
+    # ============================= Draw everything =====================================================
+    
     screen.blit(bg_img, (0, 0))
     screen.blit(player_img, (player_x, player_y))
     screen.blit(enemy_img, (enemy_x, enemy_y))
@@ -179,13 +193,22 @@ while True:
     if pygame.mouse.get_pressed()[0] and now - player_last_attack < 150 and distance < spider_ATTACK_RANGE:
         pygame.draw.line(screen, (255, 255, 255), (player_x + 50, player_y + 50), (enemy_x + 50, enemy_y + 50), 3)
 
-    # Health Bars
+
+    # ======================================== Health bar ===================================================
+    
+
     draw_health_bar(player_x, player_y, player_health, "Spider-Man")
     draw_health_bar(enemy_x, enemy_y, enemy_health, "Green Goblin")
 
     if game_over:
-        winner = "THE SLIMY GREEN GOBLIN" if player_health <= 0 else "SPIDERMAN"
+        winner = "THE GREEN GOBLIN" if player_health <= 0 else "SPIDERMAN"
         text = font.render(f"{winner} Wins!", True, (255, 255, 255))
+        font = pygame.font.SysFont("Berlin Sans FB", 74)
+        # Define Black Color RGB
+        BLACK = (255, 255, 255)
+        ui_font = pygame.font.SysFont("berlinsansfb", 24, bold=True)
+        # Define Black Color RGB
+        BLACK = (0, 0, 0)
         text_rect = text.get_rect(center=(SCREEN_WIDTH // 2, SCREEN_HEIGHT // 2))
         screen.blit(text, text_rect)
 
