@@ -5,7 +5,7 @@ from os.path import join
 
 # Initialize Pygame  
 pygame.init()  
-  
+pygame.mixer.init()
 # Screen setup  
 SCREEN_WIDTH = 1280  
 SCREEN_HEIGHT = 720  
@@ -58,6 +58,13 @@ health_items = []
 HEALTH_SPAWN_EVENT = pygame.USEREVENT + 1  
 pygame.time.set_timer(HEALTH_SPAWN_EVENT, 2000)
 
+#sound effects
+shoot_sound = pygame.mixer.Sound(join("vedha", "sound", "shoot.wav"))
+shoot_sound.set_volume(0.6)
+super_shoot_sound = pygame.mixer.Sound(join("vedha", "sound", "explode.wav"))
+super_shoot_sound.set_volume(0.9)
+angry_docock_sound = pygame.mixer.Sound(join("vedha", "sound", "scream.wav"))
+angry_docock_sound.set_volume(0.9)
 # --- SUPER POWER-UP SETUP ---
 super_items = []
 has_super_power = False
@@ -145,7 +152,7 @@ while running:
                 current_time = pygame.time.get_ticks()
                 
                 # Normal cooldown = 150ms | Enraged cooldown = 650ms (shoots way less webs)
-                shot_cooldown = 650 if p2_lives <= 20 else 150
+                shot_cooldown = 150
 
                 if current_time - last_shot_time >= shot_cooldown:
                     last_shot_time = current_time
@@ -156,7 +163,10 @@ while running:
                     distance = (dx**2 + dy**2) ** 0.5
                     
                     if distance != 0:
+                
                         if has_super_power:
+                            if super_shoot_sound:
+                                super_shoot_sound.play()
                             # Giant Web Shot
                             web_speed = 12
                             new_web_rect = web_img_large.get_rect(center=player1_rect.center)
@@ -169,6 +179,8 @@ while running:
                             })
                             has_super_power = False
                         else:
+                            if shoot_sound:
+                                shoot_sound.play()
                             # Regular Web Shot
                             web_speed = 9
                             new_web_rect = web_img_small.get_rect(center=player1_rect.center)
@@ -210,7 +222,7 @@ while running:
         # 2. Health Pickups
         for item in health_items[:]:  
             if item.colliderect(player1_rect):  
-                p1_lives = min(50, p1_lives + 5)  
+                p1_lives = min(50, p1_lives + 10)  
                 health_items.remove(item)  
 
         # 3. Super Power Pickups
@@ -227,6 +239,10 @@ while running:
         # Speed increases from 3 to 6 when angry (lost 30 HP)
         is_doc_angry = p2_lives <= 40
         current_ai_speed = 10 if is_doc_angry else doc_ock_speed
+        if angry_docock_sound:
+            if is_doc_angry:
+                angry_docock_sound.play()
+
 
         if doc_dist != 0:  
             player2_rect.x += int((doc_dx / doc_dist) * current_ai_speed)  
@@ -237,8 +253,8 @@ while running:
         if invincible_timer > 0:
             invincible_timer -= 1
         elif player1_rect.colliderect(player2_rect):
-            # Normal: 5 damage | Angry: 20 damage
-            damage_dealt = 20 if is_doc_angry else 5
+            # Normal: 5 damage | Angry: 10 damage
+            damage_dealt = 7 if is_doc_angry else 5
             p1_lives -= damage_dealt
             screen_shake = 20 if is_doc_angry else 14
             invincible_timer = 30  
@@ -352,16 +368,7 @@ while running:
                 
                 # Blit the text using its centered rect
         screen.blit(super_status, jam_rect)
-    if p2_lives <= 20:
-        jam_text = control_font.render("⚡ WEBS OVERHEATING (SLOW FIRE RATE) ⚡", True, (255,120,0))
-       # Center horizontally at the top with a 20px gap from the top border
-        jam_rect = jam_text.get_rect(midtop=(SCREEN_WIDTH // 2, 20))
-        
-        # Optional: Draw a sleek black backdrop box behind it for easy reading
-        pygame.draw.rect(screen, (0, 0, 0), jam_rect.inflate(20, 8))
-        
-        # Blit the text using its centered rect
-        screen.blit(jam_text, jam_rect)
+    
     # Draw Doc Ock (Red sprite if angry)
     if p2_lives <= 40:
         screen.blit(player2_angry_img, player2_rect)
