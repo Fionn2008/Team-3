@@ -1,3 +1,4 @@
+import math
 import pygame
 import sys
 from os.path import join
@@ -32,6 +33,28 @@ player_last_attack = 0
 enemy_last_attack = 0
 
 
+# ===================================== bb image ==================================================
+  
+collectible_img = pygame.image.load(join("Shahreen folder/image/image/CFR.png")).convert_alpha()
+collectible_img = pygame.transform.scale(collectible_img, (40, 40))  
+
+GROUND_TOP = 320
+collectible_size = 150
+NUM_COLLECTIBLES = 3
+RESPAWN_DELAY = 3000  # Respawns after 3 seconds
+
+collectibles = []
+for i in range(NUM_COLLECTIBLES):
+    collectibles.append({
+        'x': randint(50, SCREEN_WIDTH - 90),
+        'y': randint(GROUND_TOP, SCREEN_HEIGHT - 90),
+        'active': True,
+        'timer': 0,
+        'phase': randint(0, 100)  # Offset for bobbing motion
+    })
+
+score = 0
+
 # ============================================= Player identity (Spider-Man) ==========================================================
 
 # Corrected asset swap so spider.png is player and gg.png is enemy
@@ -47,12 +70,14 @@ player_speed = 5
 player_x = 400
 player_y = 300
 
+
 # ============================================== Enemy identity (Green Goblin) ==========================================================
 
 enemy_img = pygame.image.load(join("Shahreen folder/image/image/gg.png")).convert_alpha()
 rect = enemy_img.get_bounding_rect()
 enemy_img = enemy_img.subsurface(rect).copy()
 enemy_img = pygame.transform.scale(enemy_img, (100, 100))
+enemy_rect = enemy_img.get_rect(midbottom=(380, 500))
 
 enemy_size = 100
 enemy_speed = 5
@@ -120,8 +145,7 @@ while True:
             player_y -= player_speed
         if keys[pygame.K_s]:
             player_y += player_speed
-
-        # ==== Enemy movement (Arrow keys) =======================================================
+        # =================================== Green Goblin ============================================
         
         if keys[pygame.K_LEFT]:
             enemy_x -= enemy_speed
@@ -132,8 +156,27 @@ while True:
         if keys[pygame.K_DOWN]:
             enemy_y += enemy_speed
 
+        if not game_over:
+        #=========================== Collectibles Logic & Animation ==================================================
+        #============================= #Collectibles: collision + respawn =================================================
+            player_rect = pygame.Rect(player_x, player_y, player_size, player_size)
+        for c in collectibles:
+            if c['active']:
+                float_y          = c['y'] + math.sin((now / 200.0) + c['phase']) * 8
+                collectible_rect = pygame.Rect(c['x'], float_y, 40, 40)
+                if player_rect.colliderect(collectible_rect):
+                    score         += 10
+                    player_health  = min(MAX_HEALTH, player_health + 5)  # +5 HP
+                    c['active']    = False
+                    c['timer']     = now
+            else:
+                if now - c['timer'] > RESPAWN_DELAY:
+                    c['x']      = randint(50, SCREEN_WIDTH - 90)
+                    c['y']      = randint(GROUND_TOP, SCREEN_HEIGHT - 90)
+                    c['active'] = True
+
         # =============================== gg : chase spiderman ==========================================
-        
+
         dx = player_x - enemy_x
         dy = player_y - enemy_y
         dist_to_target = get_distance(player_x, player_y, enemy_x, enemy_y)
@@ -144,6 +187,7 @@ while True:
             enemy_x += dir_x * (enemy_speed * 0.4)
             enemy_y += dir_y * (enemy_speed * 0.4)
 
+
         # ========================= Keep players on screen ==================================
        
         player_x = max(0, min(player_x, SCREEN_WIDTH - player_size))
@@ -153,17 +197,21 @@ while True:
         enemy_y = max(0, min(enemy_y, SCREEN_HEIGHT - enemy_size))
 
         # ========================= Restrict players to ground area (no sky / trees) ==================================
+        
         # Ground starts at ~y=320 based on the background image; block both players above this line
         GROUND_TOP = 320
         player_y = max(GROUND_TOP, player_y)
         enemy_y  = max(GROUND_TOP, enemy_y)
 
         # ========================= Restrict players to ground area (no sky / trees) ==================================
+       
+       
         # The ground in the background starts at roughly y=320; keep both characters on the grass only
         GROUND_TOP = 320
         player_y = max(GROUND_TOP, player_y)
         enemy_y  = max(GROUND_TOP, enemy_y)
 
+        
          # ========================= Attacking ===============================================
         
         distance = get_distance(player_x, player_y, enemy_x, enemy_y)
@@ -182,6 +230,17 @@ while True:
 
         if player_health <= 0 or enemy_health <= 0:
             game_over = True
+
+        # ============================= Draw Active Floating Collectibles ============================
+        for c in collectibles:
+            if c['active']:
+             float_offset = math.sin((now / 200.0) + c['phase']) * 8
+            screen.blit(collectible_img, (c['x'], c['y'] + float_offset))
+
+        # ================================== Draw Score Counter in top-left corner ====================
+        score_text = ui_font.render(f"Score: {score}", True, (255, 255, 0))
+        screen.blit(score_text, (20, 20))
+
 
     # ============================= Draw everything =====================================================
     
@@ -211,6 +270,8 @@ while True:
         BLACK = (0, 0, 0)
         text_rect = text.get_rect(center=(SCREEN_WIDTH // 2, SCREEN_HEIGHT // 2))
         screen.blit(text, text_rect)
-
+        
+    
     pygame.display.update()
+
     clock.tick(60)
