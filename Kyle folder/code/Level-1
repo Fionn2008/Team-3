@@ -70,10 +70,52 @@ game_state = START
 game_over = False
 
 # Load images
-player_img = pygame.image.load(join("Kyle folder", "images", "conormcgregor.png")).convert_alpha()
+player_img = pygame.image.load(join("Kyle folder", "images", "conor2.0.png")).convert_alpha()
 rect = player_img.get_bounding_rect()
 player_img = player_img.subsurface(rect).copy()
 player_img = pygame.transform.scale(player_img, (100, 100))
+
+# ---------------------------------------------------------------------------
+# Conor animation frames
+# Each animation has 8 frames; we cycle through them when Conor attacks.
+# ---------------------------------------------------------------------------
+ANIM_FPS        = 12          # frames per second for the animation
+ANIM_FRAME_MS   = 1000 // ANIM_FPS   # ms per frame (~83 ms)
+
+def _load_anim(name, count=8):
+    frames = []
+    for i in range(1, count + 1):
+        img = pygame.image.load(
+            join("Kyle folder", "images", "conor_anims", f"{name}_{i}.png")
+        ).convert_alpha()
+        r = img.get_bounding_rect()
+        img = img.subsurface(r).copy()
+        img = pygame.transform.scale(img, (100, 100))
+        frames.append(img)
+    return frames
+
+conor_anims = {
+    "punch": _load_anim("punch"),
+    "kick":  _load_anim("kick"),
+    "knee":  _load_anim("knee"),
+    "idle":  _load_anim("idle", count=4),
+    "walk":  _load_anim("walk"),
+}
+
+# Animation state for Conor
+# Each attack triggers the full combo: punch → kick → knee (in order)
+CONOR_COMBO = ["punch", "kick", "knee"]
+
+conor_anim_name    = None    # which animation is currently playing (None = idle)
+conor_anim_frame   = 0       # current frame index within the active animation
+conor_anim_timer   = 0       # ms timestamp of last frame advance
+conor_anim_locked  = False   # True while a combo is playing
+conor_combo_index  = 0       # which step of CONOR_COMBO we're on
+
+# Idle / walk cycle state (runs whenever no combo is locked)
+conor_base_anim   = "idle"   # "idle" or "walk"
+conor_base_frame  = 0        # frame index for the base animation
+conor_base_timer  = 0        # ms timestamp of last base-frame advance
 
 player2_img = pygame.image.load(join("Kyle folder", "images", "spooderman.png")).convert_alpha()
 rect = player2_img.get_bounding_rect()
@@ -173,6 +215,18 @@ def reset_game():
     roll_x, roll_y = 0, 0
     roll_last_spawn = -ROLL_SPAWN_INTERVAL
     roll_glow_tick = 0
+
+    # Reset Conor animation state
+    global conor_anim_name, conor_anim_frame, conor_anim_timer, conor_anim_locked
+    global conor_combo_index, conor_base_anim, conor_base_frame, conor_base_timer
+    conor_anim_name   = None
+    conor_anim_frame  = 0
+    conor_anim_timer  = 0
+    conor_anim_locked = False
+    conor_combo_index = 0
+    conor_base_anim   = "idle"
+    conor_base_frame  = 0
+    conor_base_timer  = 0
 
 
 def draw_start_screen():
@@ -328,6 +382,13 @@ while True:
                 player_x, player_y, player2_x, player2_y, distance,
                 SPIDERMAN_KNOCKBACK_DISTANCE, KNOCKBACK_DURATION, now
             )
+            # Start the punch → kick → knee combo from the beginning
+            if not conor_anim_locked:
+                conor_combo_index = 0
+                conor_anim_name   = CONOR_COMBO[conor_combo_index]
+                conor_anim_frame  = 0
+                conor_anim_timer  = now
+                conor_anim_locked = True
 
         # Spiderman attacks with LEFT CLICK
         if mouse_buttons[0] and distance < SPIDERMAN_ATTACK_RANGE and now - player2_last_attack > ATTACK_COOLDOWN:
@@ -350,7 +411,52 @@ while True:
         draw_roll_glow(roll_x, roll_y, roll_glow_tick)
         screen.blit(roll_img, (roll_x, roll_y))
 
-    screen.blit(player_img,  (player_x,  player_y))
+    # ---- Advance Conor animation frame ----
+    now_draw = pygame.time.get_ticks()
+
+    if conor_anim_locked and conor_anim_name:
+        # Combo attack animation is running — advance it
+        if now_draw - conor_anim_timer >= ANIM_FRAME_MS:
+            conor_anim_frame += 1
+            conor_anim_timer  = now_draw
+            if conor_anim_frame >= len(conor_anims[conor_anim_name]):
+                # Current animation finished — move to the next in the combo
+                conor_combo_index += 1
+                if conor_combo_index < len(CONOR_COMBO):
+                    # Start the next animation (kick after punch, knee after kick)
+                    conor_anim_name  = CONOR_COMBO[conor_combo_index]
+                    conor_anim_frame = 0
+                else:
+                    # All three animations done — return to idle/walk
+                    conor_anim_name   = None
+                    conor_anim_frame  = 0
+                    conor_combo_index = 0
+                    conor_anim_locked = False
+    else:
+        # No combo playing — advance idle or walk cycle
+        conor_is_moving = (abs(player2_x - player_x) > player_speed)
+        desired_base = "walk" if conor_is_moving else "idle"
+        if desired_base != conor_base_anim:
+            # State changed — restart from frame 0
+            conor_base_anim  = desired_base
+            conor_base_frame = 0
+            conor_base_timer = now_draw
+        elif now_draw - conor_base_timer >= ANIM_FRAME_MS:
+            conor_base_frame = (conor_base_frame + 1) % len(conor_anims[conor_base_anim])
+            conor_base_timer = now_draw
+
+    # ---- Pick the right Conor sprite and flip to face Spiderman ----
+    if conor_anim_locked and conor_anim_name:
+        conor_frame_img = conor_anims[conor_anim_name][conor_anim_frame]
+    else:
+        conor_frame_img = conor_anims[conor_base_anim][conor_base_frame]
+
+    # Flip horizontally when Conor is to the right of Spiderman
+    facing_right = player2_x > player_x
+    if not facing_right:
+        conor_frame_img = pygame.transform.flip(conor_frame_img, True, False)
+
+    screen.blit(conor_frame_img, (player_x, player_y))
     screen.blit(player2_img, (player2_x, player2_y))
 
     draw_health_bar(player_x,  player_y,  player_health)
@@ -375,4 +481,3 @@ while True:
 
     pygame.display.flip()
     clock.tick(60)
-
