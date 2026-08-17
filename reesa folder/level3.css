@@ -52,7 +52,7 @@
 
     height: 350px;
 
-    background-color: black;
+    background-color: rgb(197, 97, 97);
 
     border: 3px solid rgb(197, 97, 97);
 
@@ -198,6 +198,20 @@
     font-size: 17px;
 
     margin-top: 15px;
+}
+
+.video-box img {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+    display: block;
+}
+
+.image-box video {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+    display: block;
 }
 
 

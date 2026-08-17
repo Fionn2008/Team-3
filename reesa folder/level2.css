@@ -200,6 +200,20 @@
     margin-top: 15px;
 }
 
+.video-box img {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+    display: block;
+}
+
+.image-box video {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+    display: block;
+}
+
 
 /* =================================
    BACK TO TOP
