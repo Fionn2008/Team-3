@@ -103,8 +103,8 @@ bg_img = pygame.transform.scale(bg_img, (SCREEN_WIDTH, SCREEN_HEIGHT))
 player1_rect = player1_img.get_rect(midbottom=(200, 500))  
 player2_rect = player2_img.get_rect(midbottom=(820, 500))  
   
-p1_lives = 100  
-p2_lives = 100 
+p1_lives = 200  
+p2_lives = 200 
 
 # Fonts
 title_font   = pygame.font.SysFont("Arial", 26, bold=True)
@@ -145,8 +145,8 @@ def reset_game():
     global p1_lives, p2_lives, game_over, winner_text, webs, health_items, super_items
     global is_shooting, doc_is_shooting, invincible_timer, has_super_power, particles, last_shot_time
     global doc_projectiles, doc_last_shot_time
-    p1_lives = 100  
-    p2_lives = 100
+    p1_lives = 200  
+    p2_lives = 200
     game_over = False  
     winner_text = ""  
     webs.clear()  
@@ -259,7 +259,7 @@ while running:
         doc_dy = player1_rect.centery - player2_rect.centery  
         doc_dist = (doc_dx**2 + doc_dy**2) ** 0.5  
 
-        is_doc_angry = p2_lives <= 40
+        is_doc_angry = p2_lives <= 50
         current_ai_speed = 10 if is_doc_angry else doc_ock_speed
         
         if is_doc_angry and angry_docock_sound and not pygame.mixer.get_busy():
@@ -401,7 +401,7 @@ while running:
             screen.blit(player1_img, player1_rect)  
 
     # Doc Ock Rendering
-    is_doc_angry = p2_lives <= 40
+    is_doc_angry = p2_lives <= 50
     if is_doc_angry:
         if doc_is_shooting:
             screen.blit(player2_angry_shoot_img, player2_rect)
@@ -436,17 +436,17 @@ while running:
         pygame.draw.circle(screen, p[5], (int(p[0]), int(p[1])), int(p[4]))
 
     # Health Bars
-    draw_character_health(player1_rect, p1_lives, 100, (0, 255, 0))  
-    draw_character_health(player2_rect, p2_lives, 100, (255, 0, 0))  
+    draw_character_health(player1_rect, p1_lives, 200, (0, 255, 0))  
+    draw_character_health(player2_rect, p2_lives, 200, (255, 0, 0))  
 
     # HUD Text
     title_surface = title_font.render("SPIDER-MAN: FAR FROM DUBLIN", True, (255, 255, 255))
     screen.blit(title_surface, (20, 15))
 
-    spidey_lives_text = hud_font.render(f"Spidey HP: {p1_lives}/100", True, (0, 255, 100))
+    spidey_lives_text = hud_font.render(f"Spidey HP: {p1_lives}/200", True, (0, 255, 100))
     screen.blit(spidey_lives_text, (20, 48))
 
-    doc_lives_text = hud_font.render(f"Doc Ock HP: {p2_lives}/100", True, (255, 80, 80))
+    doc_lives_text = hud_font.render(f"Doc Ock HP: {p2_lives}/200", True, (255, 80, 80))
     screen.blit(doc_lives_text, (SCREEN_WIDTH - doc_lives_text.get_width() - 20, 20))
 
     if has_super_power:
