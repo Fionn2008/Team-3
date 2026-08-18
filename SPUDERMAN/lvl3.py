@@ -464,8 +464,8 @@ def run_level():
     draw_character_health(player2_rect, p2_lives, 100, (255, 0, 0))  
 
         # HUD Text
-        title_surface = title_font.render("SPIDER-MAN: FAR FROM DUBLIN", True, (255, 255, 255))
-        screen.blit(title_surface, (20, 15))
+    title_surface = title_font.render("SPIDER-MAN: FAR FROM DUBLIN", True, (255, 255, 255))
+    screen.blit(title_surface, (20, 15))
 
     spidey_lives_text = hud_font.render(f"Spidey HP: {p1_lives}/100", True, (0, 255, 100))
     screen.blit(spidey_lives_text, (20, 48))
@@ -473,11 +473,11 @@ def run_level():
     doc_lives_text = hud_font.render(f"Doc Ock HP: {p2_lives}/100", True, (255, 80, 80))
     screen.blit(doc_lives_text, (SCREEN_WIDTH - doc_lives_text.get_width() - 20, 20))
 
-        if has_super_power:
-            super_status = hud_font.render("★ MEGA WEB READY! PRESS SPACE ★", True, (255, 215, 0))
-            jam_rect = super_status.get_rect(midtop=(SCREEN_WIDTH // 2, 20))
-            pygame.draw.rect(screen, (0, 0, 0), jam_rect.inflate(20, 8))
-            screen.blit(super_status, jam_rect)
+    if has_super_power:
+        super_status = hud_font.render("★ MEGA WEB READY! PRESS SPACE ★", True, (255, 215, 0))
+        jam_rect = super_status.get_rect(midtop=(SCREEN_WIDTH // 2, 20))
+        pygame.draw.rect(screen, (0, 0, 0), jam_rect.inflate(20, 8))
+        screen.blit(super_status, jam_rect)
 
         # Controls Banner
         controls_text = control_font.render("Controls: [WASD / Arrows] Move  |  [SPACE] Shoot Web", True, (220, 220, 220))
