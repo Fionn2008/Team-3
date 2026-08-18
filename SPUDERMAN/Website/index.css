@@ -1,0 +1,307 @@
+/* =================================
+   HERO SECTION
+================================= */
+
+.hero {
+    height: 450px;
+
+    margin: 30px 40px;
+
+    border-radius: 20px;
+
+    background-image:
+        linear-gradient(
+            lightgray
+        ),
+        url("images/dublin-background.jpg");
+
+    background-size: cover;
+    background-position: center;
+
+    display: flex;
+
+    justify-content: center;
+
+    align-items: center;
+
+    text-align: center;
+
+    border: 3px solid rgb(197, 97, 97);
+
+    box-shadow:
+        0 0 10px rgb(197, 97, 97),
+        0 0 20px rgb(197, 97, 97),
+        0 0 40px rgb(197, 97, 97);
+}
+
+
+/* Hero text */
+
+.hero-content {
+    color: black;
+
+    max-width: 800px;
+}
+
+
+/* Small title */
+
+.hero-content h2 {
+    font-family:
+        Impact,
+        Haettenschweiler,
+        "Arial Narrow Bold",
+        sans-serif;
+
+    font-size: 35px;
+
+    margin: 0;
+
+    color: navy;
+}
+
+
+/* Main title */
+
+.hero-content h1 {
+    font-family:
+        Impact,
+        Haettenschweiler,
+        "Arial Narrow Bold",
+        sans-serif;
+
+    font-size: 65px;
+
+    margin: 5px 0 15px 0;
+
+    color: navy;
+
+    text-shadow:
+        0 0 10px red,
+        0 0 20px red;
+}
+
+
+/* Description */
+
+.hero-content p {
+    font-size: 20px;
+
+    margin-bottom: 30px;
+
+    font-family: Arial, sans-serif;
+}
+
+
+/* Play button */
+
+.play-button {
+    display: inline-block;
+
+    padding: 15px 40px;
+
+    background-color: red;
+
+    color: white;
+
+    text-decoration: none;
+
+    font-size: 20px;
+
+    font-weight: bold;
+
+    border-radius: 8px;
+
+    border: 2px solid white;
+
+    box-shadow:
+        0 0 10px red,
+        0 0 20px red;
+
+    transition: 0.3s;
+}
+
+
+/* Button hover */
+
+.play-button:hover {
+    background-color: white;
+
+    color: red;
+
+    box-shadow:
+        0 0 10px white,
+        0 0 20px white,
+        0 0 30px white;
+}
+
+/* Carousel title */
+.carousel-title {
+    color: navy;
+    font-family: Impact, Haettenschweiler, "Arial Narrow Bold", sans-serif;
+    font-size: 28px;
+    text-align: left;
+    margin-bottom: 15px;
+}
+
+/* ==============================
+   CAROUSEL AREA
+============================== */
+
+.carousel-area {
+    width: 600px;
+    flex-shrink: 0;
+}
+
+
+/* ==============================
+   ALL CAROUSELS
+============================== */
+
+.carousel {
+    width: 600px;
+    height: 350px;
+
+    margin: 20px 0 0 0;
+
+    overflow: hidden;
+
+    box-sizing: border-box;
+
+    border: 3px solid rgb(197, 97, 97);
+    border-radius: 15px;
+
+    box-shadow:
+        0 0 10px rgb(197, 97, 97),
+        0 0 20px rgb(197, 97, 97),
+        0 0 40px rgb(197, 97, 97);
+
+    background-color: white;
+}
+
+
+/* ==============================
+   CAROUSEL TRACK
+============================== */
+
+.carousel-track {
+    display: flex;
+
+    width: 400%;
+    height: 100%;
+
+    animation: slide 12s infinite;
+}
+
+
+/* ==============================
+   SLIDES
+============================== */
+
+.slide {
+    width: 25%;
+    height: 100%;
+
+    flex-shrink: 0;
+
+    display: flex;
+    justify-content: center;
+    align-items: center;
+
+    position: relative;
+
+    background-color: lightgray;
+}
+
+
+/* ==============================
+   IMAGES
+============================== */
+
+.slide img {
+    max-width: 90%;
+    max-height: 90%;
+
+    width: auto;
+    height: auto;
+
+    object-fit: contain;
+
+    display: block;
+}
+
+
+/* ==============================
+   CAPTION
+============================== */
+
+.caption {
+    position: absolute;
+
+    bottom: 0;
+    left: 0;
+
+    width: 100%;
+
+    padding: 10px 0;
+
+    background-color: rgb(197, 97, 97);
+
+    color: white;
+
+    text-align: center;
+
+    font-size: 18px;
+}
+
+
+/* ==============================
+   ANIMATION
+============================== */
+
+@keyframes slide {
+
+    0% {
+        transform: translateX(0);
+    }
+
+    20% {
+        transform: translateX(0);
+    }
+
+    25% {
+        transform: translateX(-25%);
+    }
+
+    45% {
+        transform: translateX(-25%);
+    }
+
+    50% {
+        transform: translateX(-50%);
+    }
+
+    70% {
+        transform: translateX(-50%);
+    }
+
+    75% {
+        transform: translateX(-75%);
+    }
+
+    95% {
+        transform: translateX(-75%);
+    }
+
+    100% {
+        transform: translateX(0);
+    }
+}
+
+/* Carousel and text box container */
+/* Carousel and footer spacing */
+.content-section {
+    display: flex;
+    align-items: flex-start;
+    margin: 20px 40px 0 40px;
+}
