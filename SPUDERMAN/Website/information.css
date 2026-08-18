@@ -1,0 +1,344 @@
+/* ==============================
+   HOW TO PLAY PAGE
+============================== */
+
+.how-to-play {
+    margin: 40px;
+    padding: 40px;
+
+    text-align: center;
+
+    background-color: lightgray;
+
+    border: 3px solid rgb(197, 97, 97);
+
+    border-radius: 20px;
+
+    box-shadow:
+        0 0 10px rgb(197, 97, 97),
+        0 0 20px rgb(197, 97, 97),
+        0 0 40px rgb(197, 97, 97);
+}
+
+
+/* Main title */
+
+.how-to-play > h2 {
+    font-family:
+        Impact,
+        Haettenschweiler,
+        "Arial Narrow Bold",
+        sans-serif;
+
+    font-size: 45px;
+
+    color: navy;
+
+    margin-top: 0;
+}
+
+
+/* Introduction */
+
+.intro {
+    font-size: 18px;
+
+    color: black;
+
+    margin-bottom: 35px;
+}
+
+
+/* Instructions */
+
+.instructions {
+    display: flex;
+
+    justify-content: center;
+
+    gap: 25px;
+
+    flex-wrap: wrap;
+}
+
+
+/* Individual instruction boxes */
+
+.instruction {
+    width: 220px;
+
+    min-height: 210px;
+
+    padding: 25px;
+
+    box-sizing: border-box;
+
+    background-color: white;
+
+    border: 3px solid rgb(197, 97, 97);
+
+    border-radius: 15px;
+
+    box-shadow:
+        0 0 10px rgb(197, 97, 97);
+
+    transition: 0.3s;
+}
+
+
+/* Icons */
+
+.instruction i {
+    font-size: 40px;
+
+    color: navy;
+
+    margin-bottom: 15px;
+}
+
+
+/* Instruction headings */
+
+.instruction h3 {
+    font-family:
+        Impact,
+        Haettenschweiler,
+        "Arial Narrow Bold",
+        sans-serif;
+
+    font-size: 23px;
+
+    color: navy;
+
+    margin: 10px 0;
+}
+
+
+/* Instruction text */
+
+.instruction p {
+    font-size: 15px;
+
+    line-height: 1.5;
+
+    color: black;
+}
+
+
+/* Hover */
+
+.instruction:hover {
+    transform: translateY(-8px);
+
+    box-shadow:
+        0 0 10px rgb(197, 97, 97),
+        0 0 25px rgb(197, 97, 97);
+}
+
+
+/* ==============================
+   CONTROLS
+============================== */
+
+.controls {
+    margin: 40px auto 10px auto;
+
+    max-width: 600px;
+
+    padding: 25px;
+
+    background-color: white;
+
+    border: 3px solid rgb(197, 97, 97);
+
+    border-radius: 15px;
+
+    box-shadow:
+        0 0 10px rgb(197, 97, 97);
+}
+
+
+.controls h2 {
+    font-family:
+        Impact,
+        Haettenschweiler,
+        "Arial Narrow Bold",
+        sans-serif;
+
+    color: navy;
+
+    font-size: 30px;
+}
+
+
+.controls p {
+    font-size: 17px;
+
+    margin: 10px;
+}
+
+
+.controls b {
+    color: red;
+}
+
+/* ==============================
+   GAME AI CHATBOX
+============================== */
+
+.game-chat {
+    margin: 40px auto;
+
+    max-width: 700px;
+
+    text-align: center;
+}
+
+
+.game-chat h2 {
+    font-family:
+        Impact,
+        Haettenschweiler,
+        "Arial Narrow Bold",
+        sans-serif;
+
+    font-size: 40px;
+
+    color: navy;
+
+    margin-bottom: 5px;
+}
+
+
+.game-chat > p {
+    color: black;
+
+    font-size: 17px;
+}
+
+
+/* Chat box */
+
+.chat-box {
+    margin-top: 25px;
+
+    background-color: white;
+
+    border: 3px solid rgb(197, 97, 97);
+
+    border-radius: 15px;
+
+    box-shadow:
+        0 0 10px rgb(197, 97, 97),
+        0 0 20px rgb(197, 97, 97),
+        0 0 30px rgb(197, 97, 97);
+
+    overflow: hidden;
+}
+
+
+/* Messages */
+
+.chat-messages {
+    height: 300px;
+
+    padding: 20px;
+
+    overflow-y: auto;
+
+    text-align: left;
+
+    background-color: lightgray;
+}
+
+
+/* Bot message */
+
+.bot-message {
+    background-color: navy;
+
+    color: white;
+
+    padding: 12px 15px;
+
+    border-radius: 10px;
+
+    margin-bottom: 10px;
+
+    max-width: 80%;
+}
+
+
+/* User message */
+
+.user-message {
+    background-color: rgb(197, 97, 97);
+
+    color: white;
+
+    padding: 12px 15px;
+
+    border-radius: 10px;
+
+    margin: 10px 0 10px auto;
+
+    max-width: 80%;
+}
+
+
+/* Input area */
+
+.chat-input {
+    display: flex;
+
+    padding: 15px;
+
+    gap: 10px;
+
+    background-color: white;
+}
+
+
+.chat-input input {
+    flex: 1;
+
+    padding: 12px;
+
+    font-size: 16px;
+
+    border: 2px solid navy;
+
+    border-radius: 8px;
+
+    outline: none;
+}
+
+
+/* Ask button */
+
+.chat-input button {
+    padding: 12px 20px;
+
+    background-color: red;
+
+    color: white;
+
+    border: none;
+
+    border-radius: 8px;
+
+    font-weight: bold;
+
+    cursor: pointer;
+
+    box-shadow:
+        0 0 8px red;
+}
+
+
+.chat-input button:hover {
+    background-color: navy;
+
+    box-shadow:
+        0 0 10px navy;
+}
