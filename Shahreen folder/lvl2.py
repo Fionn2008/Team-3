@@ -111,6 +111,7 @@ def get_distance(x1, y1, x2, y2):
 
 
 # =================================== # BACKGROUND IMAGE & ENEMY POSITIONS ===============================================
+
 enemy_positions = []
 for i in range(1):
     enemy_positions.append((randint(0, SCREEN_WIDTH), randint(0, SCREEN_HEIGHT)))
@@ -133,7 +134,9 @@ while True:
     now = pygame.time.get_ticks()
 
     if not game_over:
+
         # ====================================== player and enemy movement ============================================
+        
         # ==== Player movement (WASD keys) ===
         keys = pygame.key.get_pressed()
 
@@ -144,7 +147,9 @@ while True:
         if keys[pygame.K_w]:
             player_y -= player_speed
         if keys[pygame.K_s]:
-            player_y += player_speed
+          player_y += player_speed
+
+
         # =================================== Green Goblin ============================================
         
         if keys[pygame.K_LEFT]:
@@ -157,8 +162,11 @@ while True:
             enemy_y += enemy_speed
 
         if not game_over:
+
+
         #=========================== Collectibles Logic & Animation ==================================================
-        #============================= #Collectibles: collision + respawn =================================================
+       
+
             player_rect = pygame.Rect(player_x, player_y, player_size, player_size)
         for c in collectibles:
             if c['active']:
@@ -174,6 +182,7 @@ while True:
                     c['x']      = randint(50, SCREEN_WIDTH - 90)
                     c['y']      = randint(GROUND_TOP, SCREEN_HEIGHT - 90)
                     c['active'] = True
+
 
         # =============================== gg : chase spiderman ==========================================
 
@@ -238,6 +247,7 @@ while True:
             screen.blit(collectible_img, (c['x'], c['y'] + float_offset))
 
         # ================================== Draw Score Counter in top-left corner ====================
+       
         score_text = ui_font.render(f"Score: {score}", True, (255, 255, 0))
         screen.blit(score_text, (20, 20))
 
