@@ -1,0 +1,12 @@
+class Car:
+    def __init__(self, maker, engine, year):
+        self.maker = maker
+        self.engine = engine
+        self.year = year
+
+    def displayDetails(self):
+        print(f"Maker: {self.maker}")
+        print(f"Engine: {self.engine}")
+
+audi = Car("Audi" , "type A")        
+audi.displayDetails()

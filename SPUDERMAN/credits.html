@@ -1,0 +1,859 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Spuderman: Far From Dublin — End Credits</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Rajdhani:wght@300;400;600;700&family=Orbitron:wght@400;700;900&display=swap');
+
+    /* ══════════════════════════════════════════
+       RESET & BASE
+    ══════════════════════════════════════════ */
+    *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+    :root {
+      --red:    #cc1111;
+      --red2:   #ff2222;
+      --red3:   #8b0000;
+      --blue:   #1a2a8a;
+      --white:  #f0e8e8;
+      --scroll-duration: 55s;
+    }
+
+    html, body {
+      width: 100%; height: 100%;
+      overflow: hidden;
+      background: #000;
+      font-family: 'Rajdhani', Arial, sans-serif;
+    }
+
+    /* ══════════════════════════════════════════
+       BACKGROUND — bridge scene built purely in CSS
+    ══════════════════════════════════════════ */
+    .bg {
+      position: fixed; inset: 0; z-index: 0;
+      /* Deep navy night sky */
+      background:
+        /* Red dramatic tint in centre-top */
+        radial-gradient(ellipse 60% 45% at 50% 30%,
+          rgba(120,6,6,0.30) 0%, transparent 70%),
+        /* Sky gradient */
+        linear-gradient(to bottom,
+          #03040a 0%,
+          #060814 45%,
+          #0a0c1c 60%,
+          #0b0e18 70%,
+          #10131e 80%,
+          #08090f 100%
+        );
+    }
+
+    /* Amber horizon city glow */
+    .bg::after {
+      content: '';
+      position: absolute; inset: 0;
+      background:
+        /* Amber horizon glow */
+        radial-gradient(ellipse 90% 12% at 50% 46%,
+          rgba(65,14,8,0.50) 0%, transparent 100%),
+        /* Vignette */
+        radial-gradient(ellipse 100% 100% at 50% 50%,
+          transparent 30%, rgba(0,0,0,0.65) 100%);
+    }
+
+    /* Stars — CSS only, using tiny box-shadows on a pseudo */
+    .stars {
+      position: fixed; inset: 0; z-index: 1; pointer-events: none;
+      overflow: hidden;
+    }
+    .stars::before, .stars::after {
+      content: '';
+      position: absolute;
+      border-radius: 50%;
+      background: transparent;
+      /* Layer 1 stars */
+      box-shadow:
+        40px  50px 0 0.5px rgba(200,208,232,0.6),
+        90px  120px 0 0.5px rgba(200,208,232,0.4),
+        160px 30px 0 1px   rgba(255,180,180,0.5),
+        230px 80px 0 0.5px rgba(200,208,232,0.5),
+        310px 20px 0 0.5px rgba(200,208,232,0.3),
+        380px 90px 0 0.5px rgba(200,208,232,0.6),
+        450px 40px 0 1px   rgba(200,208,232,0.4),
+        520px 110px 0 0.5px rgba(200,208,232,0.5),
+        600px 25px 0 0.5px rgba(255,180,180,0.4),
+        670px 70px 0 0.5px rgba(200,208,232,0.6),
+        720px 130px 0 0.5px rgba(200,208,232,0.3),
+        800px 45px 0 1px   rgba(200,208,232,0.5),
+        870px 95px 0 0.5px rgba(200,208,232,0.4),
+        940px 20px 0 0.5px rgba(255,180,180,0.5),
+        1010px 80px 0 0.5px rgba(200,208,232,0.6),
+        1080px 50px 0 1px  rgba(200,208,232,0.3),
+        1150px 110px 0 0.5px rgba(200,208,232,0.5),
+        1220px 30px 0 0.5px rgba(200,208,232,0.4),
+        1300px 75px 0 0.5px rgba(255,180,180,0.4),
+        70px  180px 0 0.5px rgba(200,208,232,0.3),
+        140px 200px 0 0.5px rgba(200,208,232,0.5),
+        200px 155px 0 1px  rgba(200,208,232,0.4),
+        270px 195px 0 0.5px rgba(200,208,232,0.3),
+        340px 165px 0 0.5px rgba(255,180,180,0.5),
+        420px 185px 0 0.5px rgba(200,208,232,0.4),
+        500px 150px 0 1px  rgba(200,208,232,0.6),
+        575px 190px 0 0.5px rgba(200,208,232,0.3),
+        650px 160px 0 0.5px rgba(200,208,232,0.5),
+        730px 185px 0 0.5px rgba(255,180,180,0.4),
+        820px 155px 0 0.5px rgba(200,208,232,0.4),
+        900px 195px 0 1px  rgba(200,208,232,0.3),
+        980px 170px 0 0.5px rgba(200,208,232,0.6),
+        1060px 145px 0 0.5px rgba(200,208,232,0.4),
+        1140px 190px 0 0.5px rgba(255,180,180,0.3),
+        1210px 165px 0 1px rgba(200,208,232,0.5);
+      width: 1px; height: 1px;
+      top: 0; left: 0;
+    }
+    /* Twinkling animation on star layer 2 */
+    .stars::after {
+      box-shadow:
+        55px  60px 0 0.5px rgba(200,208,232,0.5),
+        115px 140px 0 1px rgba(255,180,180,0.4),
+        185px 55px 0 0.5px rgba(200,208,232,0.3),
+        255px 100px 0 0.5px rgba(200,208,232,0.6),
+        325px 45px 0 0.5px rgba(200,208,232,0.4),
+        395px 125px 0 1px rgba(200,208,232,0.5),
+        465px 65px 0 0.5px rgba(255,180,180,0.4),
+        535px 140px 0 0.5px rgba(200,208,232,0.3),
+        620px 50px 0 0.5px rgba(200,208,232,0.6),
+        695px 105px 0 1px rgba(200,208,232,0.4),
+        765px 35px 0 0.5px rgba(200,208,232,0.5),
+        835px 115px 0 0.5px rgba(255,180,180,0.3),
+        910px 60px 0 0.5px rgba(200,208,232,0.6),
+        985px 130px 0 1px rgba(200,208,232,0.4),
+        1055px 40px 0 0.5px rgba(200,208,232,0.5),
+        1125px 120px 0 0.5px rgba(200,208,232,0.3),
+        1195px 55px 0 0.5px rgba(255,180,180,0.5),
+        1265px 95px 0 1px rgba(200,208,232,0.4);
+      animation: twinkle 4s ease-in-out infinite alternate;
+    }
+
+    @keyframes twinkle {
+      from { opacity: 0.4; }
+      to   { opacity: 1; }
+    }
+
+    /* ── City skyline silhouette — CSS shapes ── */
+    .skyline {
+      position: fixed;
+      bottom: 54%; left: 0; right: 0;
+      height: 14vh;
+      z-index: 2; pointer-events: none;
+      display: flex; align-items: flex-end;
+    }
+
+    /* Individual building blocks via inline style widths/heights */
+    .b {
+      background: #070a14;
+      flex-shrink: 0;
+      position: relative;
+    }
+    /* Lit window rows — using repeating gradient */
+    .b::after {
+      content: '';
+      position: absolute; inset: 4px 2px;
+      background: repeating-linear-gradient(
+        to bottom,
+        transparent 0px, transparent 4px,
+        rgba(255,200,80,0.18) 4px, rgba(255,200,80,0.18) 7px,
+        transparent 7px, transparent 12px
+      );
+    }
+
+    /* ── Bridge road — CSS perspective trapezoid ── */
+    .road-wrap {
+      position: fixed;
+      bottom: 0; left: 0; right: 0;
+      height: 56%;
+      z-index: 3; pointer-events: none;
+      overflow: hidden;
+    }
+
+    /* Road surface */
+    .road {
+      position: absolute;
+      bottom: 0;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 0;
+      height: 0;
+      border-left:  50vw  solid transparent;
+      border-right: 50vw  solid transparent;
+      border-bottom: 56vh solid #10131e;
+    }
+
+    /* Centre yellow line left */
+    .road-line-l {
+      position: absolute;
+      bottom: 0;
+      left: calc(50% - 1.5px);
+      width: 3px;
+      height: 56vh;
+      background: linear-gradient(to top, #b88010 0%, transparent 80%);
+      clip-path: polygon(0 100%, 100% 100%, 65% 0%, 35% 0%);
+    }
+    /* Centre yellow line right */
+    .road-line-r {
+      position: absolute;
+      bottom: 0;
+      left: calc(50% + 6px);
+      width: 3px;
+      height: 56vh;
+      background: linear-gradient(to top, #b88010 0%, transparent 80%);
+      clip-path: polygon(0 100%, 100% 100%, 65% 0%, 35% 0%);
+    }
+
+    /* ── Bridge tower ── */
+    .tower {
+      position: fixed;
+      bottom: 54%;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 8vw; max-width: 80px;
+      height: 50vh;
+      background: linear-gradient(to right, #0c1626, #162336, #08101c);
+      z-index: 4;
+      pointer-events: none;
+    }
+    /* Tower arch */
+    .tower::before {
+      content: '';
+      position: absolute;
+      bottom: 0;
+      left: 50%; transform: translateX(-50%);
+      width: 44%;
+      height: 40%;
+      background: #05080e;
+      border-radius: 50% 50% 0 0 / 70% 70% 0 0;
+    }
+    /* Red beacon */
+    .tower::after {
+      content: '';
+      position: absolute;
+      top: -8px; left: 50%; transform: translateX(-50%);
+      width: 8px; height: 8px;
+      border-radius: 50%;
+      background: #ff1a1a;
+      box-shadow: 0 0 12px 4px rgba(255,20,20,0.8);
+      animation: beacon 1.8s ease-in-out infinite alternate;
+    }
+    @keyframes beacon {
+      from { opacity: 0.5; box-shadow: 0 0 8px 2px rgba(255,20,20,0.5); }
+      to   { opacity: 1;   box-shadow: 0 0 20px 8px rgba(255,20,20,0.9); }
+    }
+
+    /* ── Suspension cables — CSS lines ── */
+    .cables {
+      position: fixed; inset: 0; z-index: 4; pointer-events: none;
+    }
+    .cable {
+      position: absolute;
+      background: #162030;
+      transform-origin: top center;
+    }
+    /* Main left cable */
+    .cable-l1 {
+      width: 3px; height: 72vh;
+      top: 4vh; left: 50%;
+      transform: rotate(-48deg);
+    }
+    .cable-l2 {
+      width: 2.5px; height: 68vh;
+      top: 4vh; left: 50%;
+      transform: rotate(-62deg);
+    }
+    .cable-l3 {
+      width: 2px; height: 75vh;
+      top: 4vh; left: 50%;
+      transform: rotate(-72deg);
+    }
+    .cable-l4 {
+      width: 2px; height: 80vh;
+      top: 4vh; left: 50%;
+      transform: rotate(-80deg);
+    }
+    /* Main right cables */
+    .cable-r1 {
+      width: 3px; height: 72vh;
+      top: 4vh; left: 50%;
+      transform: rotate(48deg);
+    }
+    .cable-r2 {
+      width: 2.5px; height: 68vh;
+      top: 4vh; left: 50%;
+      transform: rotate(62deg);
+    }
+    .cable-r3 {
+      width: 2px; height: 75vh;
+      top: 4vh; left: 50%;
+      transform: rotate(72deg);
+    }
+    .cable-r4 {
+      width: 2px; height: 80vh;
+      top: 4vh; left: 50%;
+      transform: rotate(80deg);
+    }
+    /* Big cross cables */
+    .cable-x1 {
+      width: 2.5px; height: 105vh;
+      top: 8vh; left: 2%;
+      transform: rotate(55deg);
+      transform-origin: top left;
+    }
+    .cable-x2 {
+      width: 2.5px; height: 105vh;
+      top: 8vh; right: 2%;
+      transform: rotate(-55deg);
+      transform-origin: top right;
+    }
+
+    /* Railing left */
+    .rail-l {
+      position: fixed;
+      bottom: 0; left: 0;
+      width: 1.5px; height: 32vh;
+      background: linear-gradient(to top, #182038, transparent);
+      transform: rotate(-8deg);
+      transform-origin: bottom left;
+      z-index: 5;
+    }
+    .rail-r {
+      position: fixed;
+      bottom: 0; right: 0;
+      width: 1.5px; height: 32vh;
+      background: linear-gradient(to top, #182038, transparent);
+      transform: rotate(8deg);
+      transform-origin: bottom right;
+      z-index: 5;
+    }
+
+    /* Corner spider webs */
+    .corner-web {
+      position: fixed; z-index: 6; pointer-events: none;
+      opacity: 0.18;
+    }
+    .corner-web svg { display: block; }
+    .cw-tl { top: 0;  left: 0;  }
+    .cw-tr { top: 0;  right: 0; transform: scaleX(-1); }
+    .cw-bl { bottom: 0; left: 0; transform: scaleY(-1); }
+    .cw-br { bottom: 0; right: 0; transform: scale(-1,-1); }
+
+    /* Scanlines */
+    .scanlines {
+      position: fixed; inset: 0; z-index: 7; pointer-events: none;
+      background: repeating-linear-gradient(
+        0deg, transparent, transparent 3px,
+        rgba(0,0,0,0.06) 3px, rgba(0,0,0,0.06) 4px
+      );
+    }
+
+    /* Dark overlay for readability */
+    .read-overlay {
+      position: fixed; inset: 0; z-index: 8; pointer-events: none;
+      background: rgba(0,0,0,0.55);
+    }
+
+    /* Fade top and bottom */
+    .fade-mask {
+      position: fixed; inset: 0; z-index: 9; pointer-events: none;
+      background: linear-gradient(to bottom,
+        rgba(0,0,0,1) 0%,
+        rgba(0,0,0,0) 11%,
+        rgba(0,0,0,0) 89%,
+        rgba(0,0,0,1) 100%
+      );
+    }
+
+    /* ══════════════════════════════════════════
+       SCROLLING CREDITS
+    ══════════════════════════════════════════ */
+    .roll-wrap {
+      position: fixed;
+      top: 0; left: 50%;
+      transform: translateX(-50%);
+      width: min(660px, 92vw);
+      height: 100vh;
+      overflow: hidden;
+      z-index: 10;
+      pointer-events: none;
+    }
+
+    .roll {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 0 20px;
+      /* Animation: scroll from bottom to top */
+      animation: scroll-up var(--scroll-duration) linear infinite;
+      /* Start off-screen below */
+      transform: translateY(100vh);
+    }
+
+    @keyframes scroll-up {
+      from { transform: translateY(100vh); }
+      to   { transform: translateY(-100%); }
+    }
+
+    /* ── Logo ── */
+    .logo-wrap { margin-bottom: 28px; }
+    .logo-wrap svg { display: block; margin: auto; }
+
+    /* ── Title card ── */
+    .title-card { text-align: center; margin-bottom: 52px; }
+
+    .tc-eyebrow {
+      font-family: 'Orbitron', sans-serif;
+      font-size: clamp(9px, 1.3vw, 12px);
+      color: rgba(200,55,55,0.72);
+      letter-spacing: 8px; margin-bottom: 10px;
+    }
+    .tc-main {
+      font-family: 'Orbitron', sans-serif; font-weight: 900;
+      font-size: clamp(30px, 5.5vw, 68px);
+      color: #fff; letter-spacing: 4px; line-height: 1;
+      text-shadow:
+        0 0 22px rgba(220,30,30,0.9),
+        0 0 55px rgba(180,0,0,0.4);
+    }
+    .tc-colon {
+      font-family: 'Orbitron', sans-serif;
+      font-size: clamp(14px, 2.2vw, 26px);
+      color: #cc1111; letter-spacing: 6px; line-height: 1.6;
+      text-shadow: 0 0 12px #ff2222;
+    }
+    .tc-sub {
+      font-family: 'Orbitron', sans-serif;
+      font-size: clamp(16px, 3.2vw, 42px);
+      color: rgba(228,208,208,0.6);
+      letter-spacing: 10px; line-height: 1;
+    }
+    .tc-city {
+      font-family: 'Orbitron', sans-serif; font-weight: 900;
+      font-size: clamp(34px, 6.5vw, 80px);
+      color: #ff2222; letter-spacing: 6px; line-height: 1;
+      text-shadow:
+        0 0 34px rgba(255,30,30,1),
+        0 0 75px rgba(200,0,0,0.5);
+    }
+    .tc-divider {
+      width: 180px; height: 3px;
+      background: linear-gradient(90deg, transparent, #cc1111, #1a2a8a, transparent);
+      margin: 18px auto 0;
+      box-shadow: 0 0 10px #cc1111;
+    }
+
+    /* ── Thank You block ── */
+    .ty-block {
+      width: 100%; text-align: center;
+      margin: 10px 0 56px;
+      padding: 26px 34px;
+      border: 1px solid rgba(180,20,20,0.28);
+      border-radius: 4px;
+      background: rgba(0,0,0,0.42);
+      position: relative;
+    }
+    .ty-block::before { content: '🕷'; font-size: 18px; position: absolute; top: 10px; left: 14px; }
+    .ty-block::after  { content: '🕷'; font-size: 18px; position: absolute; top: 10px; right: 14px; }
+
+    .ty-title {
+      font-family: 'Orbitron', sans-serif;
+      font-size: clamp(13px, 2vw, 20px);
+      color: #ff4444; letter-spacing: 4px; margin-bottom: 14px;
+      text-shadow: 0 0 12px rgba(255,50,50,0.55);
+    }
+    .ty-body {
+      font-family: 'Rajdhani', sans-serif;
+      font-size: clamp(13px, 1.8vw, 18px);
+      color: rgba(230,210,210,0.84);
+      line-height: 1.88; font-weight: 400;
+    }
+    .ty-body strong { color: #fff; font-weight: 700; }
+    .ty-sign {
+      font-family: 'Orbitron', sans-serif;
+      font-size: clamp(10px, 1.3vw, 13px);
+      color: rgba(180,30,30,0.78);
+      letter-spacing: 3px; margin-top: 16px;
+    }
+
+    /* ── Section header ── */
+    .section-hdr {
+      font-family: 'Orbitron', sans-serif;
+      font-size: clamp(8px, 1vw, 10px);
+      color: rgba(200,40,40,0.62);
+      letter-spacing: 6px; text-align: center;
+      margin-bottom: 24px; width: 100%;
+    }
+    .section-hdr::before,
+    .section-hdr::after {
+      content: '';
+      display: inline-block;
+      width: 36px; height: 1px;
+      background: rgba(180,30,30,0.35);
+      vertical-align: middle; margin: 0 10px;
+    }
+
+    /* ── Credit row ── */
+    .credit-group {
+      width: 100%; text-align: center; margin-bottom: 30px;
+    }
+    .credit-role {
+      font-family: 'Rajdhani', sans-serif; font-weight: 300;
+      font-size: clamp(10px, 1.2vw, 13px);
+      color: rgba(200,75,75,0.74);
+      letter-spacing: 4px; text-transform: uppercase; margin-bottom: 3px;
+    }
+    .credit-name {
+      font-family: 'Rajdhani', sans-serif; font-weight: 700;
+      font-size: clamp(18px, 2.5vw, 30px);
+      color: #f0e0e0; letter-spacing: 2px;
+      text-shadow: 0 0 10px rgba(200,40,40,0.18);
+    }
+    .credit-name-sm {
+      font-family: 'Rajdhani', sans-serif; font-weight: 700;
+      font-size: clamp(15px, 2vw, 24px);
+      color: #f0e0e0; letter-spacing: 2px; line-height: 1.55;
+    }
+
+    /* ── Web divider ── */
+    .web-div {
+      width: 100%; margin: 4px 0 24px;
+      display: flex; align-items: center;
+      justify-content: center; gap: 8px;
+      font-size: 15px; color: rgba(150,20,20,0.4);
+    }
+    .web-div::before, .web-div::after {
+      content: '';
+      flex: 1; height: 1px;
+      background: linear-gradient(90deg,
+        transparent, rgba(170,20,20,0.3), transparent);
+    }
+
+    /* ── End card ── */
+    .end-card {
+      text-align: center; margin: 34px 0 46px; width: 100%;
+    }
+    .end-studio {
+      font-family: 'Orbitron', sans-serif;
+      font-size: clamp(11px, 1.6vw, 17px);
+      color: rgba(200,55,55,0.55);
+      letter-spacing: 5px; margin-bottom: 6px;
+    }
+    .end-year {
+      font-family: 'Orbitron', sans-serif;
+      font-size: clamp(9px, 1.2vw, 13px);
+      color: rgba(155,150,150,0.35);
+      letter-spacing: 4px; margin-bottom: 18px;
+    }
+    .end-emoji { font-size: 30px; margin: 14px 0; display: block; }
+    .end-copy {
+      font-family: 'Rajdhani', sans-serif;
+      font-size: clamp(10px, 1.1vw, 12px);
+      color: rgba(140,130,130,0.3); letter-spacing: 2px;
+    }
+
+    /* Bottom spacer so credits scroll fully off screen */
+    .spacer { height: 100vh; }
+
+    /* ══════════════════════════════════════════
+       PAUSE CONTROL  (pure CSS checkbox hack)
+    ══════════════════════════════════════════ */
+    #pause-toggle { display: none; }
+
+    .ctrl-label {
+      position: fixed;
+      bottom: 18px; right: 18px; z-index: 20;
+      background: rgba(130,8,8,0.55);
+      border: 1px solid rgba(200,30,30,0.35);
+      color: #ffaaaa;
+      font-family: 'Orbitron', sans-serif;
+      font-size: 10px; letter-spacing: 1px;
+      padding: 8px 16px; border-radius: 4px;
+      cursor: pointer;
+      user-select: none;
+      transition: background 0.15s;
+      pointer-events: all;
+    }
+    .ctrl-label:hover { background: rgba(190,15,15,0.65); }
+
+    /* When checkbox is checked → pause the animation */
+    #pause-toggle:checked ~ .roll-wrap .roll {
+      animation-play-state: paused;
+    }
+    /* Change button label when paused */
+    #pause-toggle:checked ~ .ctrl-label::after {
+      content: '▶  PLAY';
+    }
+    .ctrl-label::after { content: '⏸  PAUSE'; }
+
+    .hint-lbl {
+      position: fixed; bottom: 20px; left: 18px; z-index: 20;
+      font-family: 'Orbitron', sans-serif; font-size: 8px;
+      letter-spacing: 2px; color: rgba(170,35,35,0.38);
+    }
+
+  </style>
+</head>
+<body>
+
+  <!-- ── BACKGROUND LAYERS ── -->
+  <div class="bg"></div>
+  <div class="stars"></div>
+
+  <!-- City skyline (CSS blocks) -->
+  <div class="skyline" aria-hidden="true">
+    <div class="b" style="width:22px;height:54%"></div>
+    <div class="b" style="width:18px;height:72%"></div>
+    <div class="b" style="width:26px;height:43%"></div>
+    <div class="b" style="width:4px; height:20%"></div>
+    <div class="b" style="width:20px;height:83%"></div>
+    <div class="b" style="width:24px;height:59%"></div>
+    <div class="b" style="width:16px;height:91%"></div>
+    <div class="b" style="width:22px;height:67%"></div>
+    <div class="b" style="width:28px;height:49%"></div>
+    <div class="b" style="width:18px;height:77%"></div>
+    <div class="b" style="width:24px;height:62%"></div>
+    <div class="b" style="width:16px;height:54%"></div>
+    <!-- gap in middle for tower -->
+    <div style="flex:1"></div>
+    <div class="b" style="width:16px;height:62%"></div>
+    <div class="b" style="width:22px;height:55%"></div>
+    <div class="b" style="width:18px;height:81%"></div>
+    <div class="b" style="width:26px;height:47%"></div>
+    <div class="b" style="width:20px;height:73%"></div>
+    <div class="b" style="width:24px;height:61%"></div>
+    <div class="b" style="width:18px;height:89%"></div>
+    <div class="b" style="width:28px;height:51%"></div>
+    <div class="b" style="width:24px;height:71%"></div>
+    <div class="b" style="width:20px;height:57%"></div>
+    <div class="b" style="width:14px;height:44%"></div>
+  </div>
+
+  <!-- Road -->
+  <div class="road-wrap" aria-hidden="true">
+    <div class="road"></div>
+    <div class="road-line-l"></div>
+    <div class="road-line-r"></div>
+  </div>
+
+  <!-- Bridge tower -->
+  <div class="tower" aria-hidden="true"></div>
+
+  <!-- Suspension cables -->
+  <div class="cables" aria-hidden="true">
+    <div class="cable cable-l1"></div>
+    <div class="cable cable-l2"></div>
+    <div class="cable cable-l3"></div>
+    <div class="cable cable-l4"></div>
+    <div class="cable cable-r1"></div>
+    <div class="cable cable-r2"></div>
+    <div class="cable cable-r3"></div>
+    <div class="cable cable-r4"></div>
+    <div class="cable cable-x1"></div>
+    <div class="cable cable-x2"></div>
+  </div>
+
+  <!-- Railings -->
+  <div class="rail-l" aria-hidden="true"></div>
+  <div class="rail-r" aria-hidden="true"></div>
+
+  <!-- Corner spider webs (inline SVG) -->
+  <div class="corner-web cw-tl" aria-hidden="true">
+    <svg width="200" height="200" viewBox="0 0 200 200" fill="none">
+      <g stroke="#cc1111" stroke-width="0.9">
+        <line x1="0" y1="0" x2="200" y2="0"/>
+        <line x1="0" y1="0" x2="180" y2="60"/>
+        <line x1="0" y1="0" x2="140" y2="120"/>
+        <line x1="0" y1="0" x2="80"  y2="170"/>
+        <line x1="0" y1="0" x2="0"   y2="200"/>
+        <line x1="0" y1="0" x2="60"  y2="180"/>
+        <line x1="0" y1="0" x2="120" y2="140"/>
+        <!-- Arcs as polylines -->
+        <polyline points="40,0 36,14 26,26 14,36 0,40"/>
+        <polyline points="80,0 72,27 52,52 27,72 0,80"/>
+        <polyline points="120,0 108,40 78,78 40,108 0,120"/>
+        <polyline points="160,0 144,54 104,104 54,144 0,160"/>
+        <polyline points="200,0 180,67 130,130 67,180 0,200"/>
+      </g>
+    </svg>
+  </div>
+  <div class="corner-web cw-tr" aria-hidden="true">
+    <svg width="200" height="200" viewBox="0 0 200 200" fill="none">
+      <g stroke="#cc1111" stroke-width="0.9">
+        <line x1="0" y1="0" x2="200" y2="0"/>
+        <line x1="0" y1="0" x2="180" y2="60"/>
+        <line x1="0" y1="0" x2="140" y2="120"/>
+        <line x1="0" y1="0" x2="80"  y2="170"/>
+        <line x1="0" y1="0" x2="0"   y2="200"/>
+        <line x1="0" y1="0" x2="60"  y2="180"/>
+        <line x1="0" y1="0" x2="120" y2="140"/>
+        <polyline points="40,0 36,14 26,26 14,36 0,40"/>
+        <polyline points="80,0 72,27 52,52 27,72 0,80"/>
+        <polyline points="120,0 108,40 78,78 40,108 0,120"/>
+        <polyline points="160,0 144,54 104,104 54,144 0,160"/>
+        <polyline points="200,0 180,67 130,130 67,180 0,200"/>
+      </g>
+    </svg>
+  </div>
+  <div class="corner-web cw-bl" aria-hidden="true">
+    <svg width="160" height="160" viewBox="0 0 200 200" fill="none">
+      <g stroke="#cc1111" stroke-width="0.9">
+        <line x1="0" y1="0" x2="200" y2="0"/>
+        <line x1="0" y1="0" x2="180" y2="60"/>
+        <line x1="0" y1="0" x2="140" y2="120"/>
+        <line x1="0" y1="0" x2="0"   y2="200"/>
+        <line x1="0" y1="0" x2="60"  y2="180"/>
+        <polyline points="40,0 36,14 26,26 14,36 0,40"/>
+        <polyline points="80,0 72,27 52,52 27,72 0,80"/>
+        <polyline points="120,0 108,40 78,78 40,108 0,120"/>
+        <polyline points="160,0 144,54 104,104 54,144 0,160"/>
+        <polyline points="200,0 180,67 130,130 67,180 0,200"/>
+      </g>
+    </svg>
+  </div>
+  <div class="corner-web cw-br" aria-hidden="true">
+    <svg width="160" height="160" viewBox="0 0 200 200" fill="none">
+      <g stroke="#cc1111" stroke-width="0.9">
+        <line x1="0" y1="0" x2="200" y2="0"/>
+        <line x1="0" y1="0" x2="180" y2="60"/>
+        <line x1="0" y1="0" x2="140" y2="120"/>
+        <line x1="0" y1="0" x2="0"   y2="200"/>
+        <line x1="0" y1="0" x2="60"  y2="180"/>
+        <polyline points="40,0 36,14 26,26 14,36 0,40"/>
+        <polyline points="80,0 72,27 52,52 27,72 0,80"/>
+        <polyline points="120,0 108,40 78,78 40,108 0,120"/>
+        <polyline points="160,0 144,54 104,104 54,144 0,160"/>
+        <polyline points="200,0 180,67 130,130 67,180 0,200"/>
+      </g>
+    </svg>
+  </div>
+
+  <div class="scanlines"></div>
+  <div class="read-overlay"></div>
+  <div class="fade-mask"></div>
+
+  <!-- ══ PAUSE TOGGLE (CSS-only) ══ -->
+  <input type="checkbox" id="pause-toggle"/>
+
+  <!-- ══ SCROLLING CREDITS ══ -->
+  <div class="roll-wrap">
+    <div class="roll">
+
+      <!-- Spider logo -->
+      <div class="logo-wrap">
+        <svg width="72" height="72" viewBox="0 0 80 80" fill="none">
+          <ellipse cx="40" cy="50" rx="11" ry="14" fill="#cc1111"/>
+          <ellipse cx="40" cy="28" rx="9"  ry="9"  fill="#cc1111"/>
+          <line x1="29" y1="38" x2="5"  y2="23" stroke="#cc1111" stroke-width="2.5" stroke-linecap="round"/>
+          <line x1="29" y1="45" x2="4"  y2="45" stroke="#cc1111" stroke-width="2.5" stroke-linecap="round"/>
+          <line x1="29" y1="52" x2="5"  y2="66" stroke="#cc1111" stroke-width="2.5" stroke-linecap="round"/>
+          <line x1="51" y1="38" x2="75" y2="23" stroke="#cc1111" stroke-width="2.5" stroke-linecap="round"/>
+          <line x1="51" y1="45" x2="76" y2="45" stroke="#cc1111" stroke-width="2.5" stroke-linecap="round"/>
+          <line x1="51" y1="52" x2="75" y2="66" stroke="#cc1111" stroke-width="2.5" stroke-linecap="round"/>
+          <ellipse cx="35" cy="27" rx="3.2" ry="2.5" fill="#fff"/>
+          <ellipse cx="45" cy="27" rx="3.2" ry="2.5" fill="#fff"/>
+        </svg>
+      </div>
+
+      <!-- Title -->
+      <div class="title-card">
+        <div class="tc-eyebrow">POTATO PRODUCTIONS PRESENTS</div>
+        <div class="tc-main">SPUDERMAN</div>
+        <div class="tc-colon">:</div>
+        <div class="tc-sub">FAR FROM</div>
+        <div class="tc-city">DUBLIN</div>
+        <div class="tc-divider"></div>
+      </div>
+
+      <!-- Thank you -->
+      <div class="ty-block">
+        <div class="ty-title">THANK YOU FOR PLAYING</div>
+        <div class="ty-body">
+          From everyone on the team —
+          <strong>thank you</strong> for swinging through Dublin with us.<br><br>
+          We hope Spuderman's adventure made you laugh,
+          kept you on the edge of your seat, and maybe even
+          made you crave a potato or two along the way.<br><br>
+          Every web shot, every dodge, every moment you spent
+          in our world means everything to us.<br><br>
+          <strong>Until the next adventure — stay spectacular.</strong>
+        </div>
+        <div class="ty-sign">— POTATO PRODUCTIONS 🕷</div>
+      </div>
+
+      <!-- Credits -->
+      <div class="section-hdr">CREATED BY</div>
+
+      <div class="credit-group">
+        <div class="credit-role">Web Designer</div>
+        <div class="credit-name">Reesa Kochumuttam</div>
+      </div>
+      <div class="web-div">🕸</div>
+
+      <div class="credit-group">
+        <div class="credit-role">Game Designer &amp; Animator</div>
+        <div class="credit-name">Kyle Fahy</div>
+      </div>
+      <div class="web-div">🕸</div>
+
+      <div class="credit-group">
+        <div class="credit-role">Graphic Designer &amp; Animator</div>
+        <div class="credit-name">Fionn O'Brien</div>
+      </div>
+      <div class="web-div">🕸</div>
+
+      <div class="credit-group">
+        <div class="credit-role">Game Designer</div>
+        <div class="credit-name">Vedhasree Loganathan</div>
+      </div>
+      <div class="web-div">🕸</div>
+
+      <div class="credit-group">
+        <div class="credit-role">Game Designer</div>
+        <div class="credit-name">Shahreen Prante</div>
+      </div>
+
+      <div class="web-div" style="margin-top:22px">✦</div>
+      <div class="section-hdr">SPECIAL THANKS</div>
+
+      <div class="credit-group">
+        <div class="credit-role">Everyone Who Played</div>
+        <div class="credit-name">You 🕷</div>
+      </div>
+
+      <div class="credit-group">
+        <div class="credit-role">Built With</div>
+        <div class="credit-name-sm">HTML · CSS · JavaScript</div>
+      </div>
+
+      <div class="credit-group">
+        <div class="credit-role">Inspired By</div>
+        <div class="credit-name-sm">The Amazing Spider-Man<br>&amp; The Humble Potato</div>
+      </div>
+
+      <!-- End card -->
+      <div class="end-card">
+        <div class="tc-divider" style="margin:0 auto 22px"></div>
+        <div class="end-studio">POTATO PRODUCTIONS</div>
+        <div class="end-year">© 2024  ALL RIGHTS RESERVED</div>
+        <span class="end-emoji">🕷</span>
+        <div class="end-copy">NO POTATOES WERE HARMED IN THE MAKING OF THIS GAME</div>
+      </div>
+
+      <div class="spacer"></div>
+    </div>
+  </div>
+
+  <!-- Pause button (label toggles the hidden checkbox) -->
+  <label class="ctrl-label" for="pause-toggle"></label>
+  <div class="hint-lbl">CLICK TO PAUSE / RESUME</div>
+
+</body>
+</html>
