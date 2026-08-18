@@ -424,22 +424,22 @@ def run_level():
             else:
                 screen.blit(player1_img, player1_rect)
 
-    # Doc Ock Rendering
-    is_doc_angry = p2_lives <= 40
-    if is_doc_angry:
-        if doc_is_shooting:
-            screen.blit(player2_angry_shoot_img, player2_rect)
+        # Doc Ock Rendering
+        is_doc_angry = p2_lives <= 40
+        if is_doc_angry:
+            if doc_is_shooting:
+                screen.blit(player2_angry_shoot_img, player2_rect)
+            else:
+                screen.blit(player2_angry_img, player2_rect)
+
+            angry_text = control_font.render("⚠ ENRAGED! ⚠", True, (255, 40, 40))
+            text_pos = (player2_rect.centerx - (angry_text.get_width() // 2), player2_rect.top - 34)
+            screen.blit(angry_text, text_pos)
         else:
-            screen.blit(player2_angry_img, player2_rect)
-        
-        angry_text = control_font.render("⚠ ENRAGED! ⚠", True, (255, 40, 40))
-        text_pos = (player2_rect.centerx - (angry_text.get_width() // 2), player2_rect.top - 34)
-        screen.blit(angry_text, text_pos)
-    else:
-        if doc_is_shooting:
-            screen.blit(player2_shoot_img, player2_rect)
-        else:
-            screen.blit(player2_img, player2_rect)
+            if doc_is_shooting:
+                screen.blit(player2_shoot_img, player2_rect)
+            else:
+                screen.blit(player2_img, player2_rect)
 
         # Draw Doc Ock Projectiles
         for p in doc_projectiles:
@@ -459,19 +459,19 @@ def run_level():
         for p in particles:
             pygame.draw.circle(screen, p[5], (int(p[0]), int(p[1])), int(p[4]))
 
-    # Health Bars
-    draw_character_health(player1_rect, p1_lives, 100, (0, 255, 0))  
-    draw_character_health(player2_rect, p2_lives, 100, (255, 0, 0))  
+        # Health Bars
+        draw_character_health(player1_rect, p1_lives, 100, (0, 255, 0))
+        draw_character_health(player2_rect, p2_lives, 100, (255, 0, 0))
 
         # HUD Text
     title_surface = title_font.render("SPIDER-MAN: FAR FROM DUBLIN", True, (255, 255, 255))
     screen.blit(title_surface, (20, 15))
 
-    spidey_lives_text = hud_font.render(f"Spidey HP: {p1_lives}/100", True, (0, 255, 100))
-    screen.blit(spidey_lives_text, (20, 48))
+        spidey_lives_text = hud_font.render(f"Spidey HP: {p1_lives}/100", True, (0, 255, 100))
+        screen.blit(spidey_lives_text, (20, 48))
 
-    doc_lives_text = hud_font.render(f"Doc Ock HP: {p2_lives}/100", True, (255, 80, 80))
-    screen.blit(doc_lives_text, (SCREEN_WIDTH - doc_lives_text.get_width() - 20, 20))
+        doc_lives_text = hud_font.render(f"Doc Ock HP: {p2_lives}/100", True, (255, 80, 80))
+        screen.blit(doc_lives_text, (SCREEN_WIDTH - doc_lives_text.get_width() - 20, 20))
 
     if has_super_power:
         super_status = hud_font.render("★ MEGA WEB READY! PRESS SPACE ★", True, (255, 215, 0))
