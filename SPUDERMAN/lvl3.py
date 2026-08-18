@@ -88,7 +88,7 @@ super_shoot_sound = pygame.mixer.Sound(join("vedha", "sound", "explode.wav"))
 super_shoot_sound.set_volume(0.9)
 angry_docock_sound = pygame.mixer.Sound(join("vedha", "sound", "scream.wav"))
 angry_docock_sound.set_volume(0.9)
-
+laser_sound = pygame.mixer.Sound(join("vedha", "sound", "laser.wav"))
 # --- Super Power-Up Setup ---
 super_items = []
 has_super_power = False
