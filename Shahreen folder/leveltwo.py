@@ -64,7 +64,7 @@ enemy_y = 400
 # ============================================== Bomb Setup ========================================================
 try:
     bomb_img = pygame.image.load(join("Shahreen folder/image/image/bomborange.png")).convert_alpha()
-    bomb_img = pygame.transform.scale(bomb_img, (45, 45))
+    bomb_img = pygame.transform.scale(bomb_img, (100, 100))
 except (pygame.error, FileNotFoundError):
     bomb_img = pygame.Surface((35, 35), pygame.SRCALPHA)
     pygame.draw.circle(bomb_img, (255, 140, 0), (17, 17), 16)
@@ -77,20 +77,20 @@ pygame.time.set_timer(BOMB_EVENT, 1200)  # Goblin throws a bomb every 1.2 second
 # 1. Health Item (e.g., food/medkit)
 try:
     health_img = pygame.image.load(join("Shahreen folder/image/image/cfr.png")).convert_alpha()
-    health_img = pygame.transform.scale(health_img, (50, 50))
+    health_img = pygame.transform.scale(health_img, (150, 150))
 except (pygame.error, FileNotFoundError):
-    health_img = pygame.Surface((40, 40), pygame.SRCALPHA)
+    health_img = pygame.Surface((100, 100), pygame.SRCALPHA)
     pygame.draw.circle(health_img, (0, 255, 100), (20, 20), 18)
 
 health_items = []
 HEALTH_SPAWN_EVENT = pygame.USEREVENT + 1
-pygame.time.set_timer(HEALTH_SPAWN_EVENT, 4000)  # Spawn every 4 seconds
+pygame.time.set_timer(HEALTH_SPAWN_EVENT, 2000)  # Spawn every 4 seconds
 
 # 2. Super Power Orb Collectible
 super_items = []
 has_super_power = False
 SUPER_SPAWN_EVENT = pygame.USEREVENT + 2
-pygame.time.set_timer(SUPER_SPAWN_EVENT, 8000)   # Spawn every 8 seconds
+pygame.time.set_timer(SUPER_SPAWN_EVENT, 4000)   # Spawn every 8 seconds
 
 # Explosion particles: [x, y, vx, vy, radius, color, life]
 particles = []
