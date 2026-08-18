@@ -109,7 +109,7 @@ def draw_start_screen(mouse_pos):
     screen.blit(overlay, (0, 0))
 
     # Title with layered shadow for depth
-    title_text = "Spiderman"
+    title_text = "Spuderman"
     sub_text   = "Far From Dublin"
 
     # Outer glow / thick shadow
