@@ -4,7 +4,7 @@ import sys
 import webbrowser
 from os.path import join, dirname, abspath
 import credits
- 
+  
 # Initialize Pygame
 pygame.init()
  
