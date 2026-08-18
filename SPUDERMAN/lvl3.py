@@ -218,7 +218,7 @@ def run_level():
                                     'vx': (dx / distance) * web_speed,
                                     'vy': (dy / distance) * web_speed,
                                     'is_super': True,
-                                    'damage': 10
+                                    'damage': 20
                                 })
                                 has_super_power = False
                             else:
@@ -460,8 +460,8 @@ def run_level():
             pygame.draw.circle(screen, p[5], (int(p[0]), int(p[1])), int(p[4]))
 
         # Health Bars
-        draw_character_health(player1_rect, p1_lives, 100, (0, 255, 0))
-        draw_character_health(player2_rect, p2_lives, 100, (255, 0, 0))
+        draw_character_health(player1_rect, p1_lives, 200, (0, 255, 0))
+        draw_character_health(player2_rect, p2_lives, 200, (255, 0, 0))
 
         # HUD Text
         title_surface = title_font.render("SPIDER-MAN: FAR FROM DUBLIN", True, (255, 255, 255))
