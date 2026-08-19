@@ -29,10 +29,12 @@ player_x = 100
 player_y = GROUND_Y
 
 # Player2 settings (Spiderman - controlled by WASD)
-player2_size = 100
+player2_size = 80  # a bit smaller than Conor
 player2_speed = 5
 player2_x = SCREEN_WIDTH - 200
-player2_y = GROUND_Y
+# Bottom-align Spiderman with Conor's feet even though he's a smaller box
+PLAYER2_GROUND_Y = GROUND_Y + (player_size - player2_size)
+player2_y = PLAYER2_GROUND_Y
 
 # Health settings
 CONOR_MAX_HEALTH     = 300
@@ -41,10 +43,11 @@ player_health = CONOR_MAX_HEALTH
 player2_health = SPIDERMAN_MAX_HEALTH
 
 CONOR_ATTACK_DAMAGE = 5
-SPIDERMAN_ATTACK_DAMAGE = 10
+SPIDERMAN_ATTACK_DAMAGE = 8  # web shot — a little less than Conor's melee damage
 CONOR_ATTACK_RANGE = 120
-SPIDERMAN_ATTACK_RANGE = 200
+SPIDERMAN_ATTACK_RANGE = 220  # webs reach very slightly further than before
 ATTACK_COOLDOWN = 500
+ATTACK_FLASH_MS = 150  # how long the shoot sprite / web visual show after attacking
 
 # Knockback settings
 CONOR_KNOCKBACK_DISTANCE = 160
@@ -74,7 +77,7 @@ player2_knockback = (0, 0, 0)
 game_over = False
 
 # Load images
-player_img = pygame.image.load(join(BASE_DIR, "images", "conor2.0.png")).convert_alpha()
+player_img = pygame.image.load(join(BASE_DIR, "images", "conormcgregor.png")).convert_alpha()
 rect = player_img.get_bounding_rect()
 player_img = player_img.subsurface(rect).copy()
 player_img = pygame.transform.scale(player_img, (100, 100))
@@ -145,10 +148,21 @@ conor_landing         = False  # True while showing jump_3 (landing frame)
 conor_landing_timer   = 0      # ms timestamp when landing frame started
 LANDING_DISPLAY_MS    = 300    # how long jump_3 shows before returning to idle/walk
 
-player2_img = pygame.image.load(join(BASE_DIR, "images", "spooderman.png")).convert_alpha()
+player2_img = pygame.image.load(join(BASE_DIR, "images", "spidy.png")).convert_alpha()
 rect = player2_img.get_bounding_rect()
 player2_img = player2_img.subsurface(rect).copy()
-player2_img = pygame.transform.scale(player2_img, (100, 100))
+player2_img = pygame.transform.scale(player2_img, (player2_size, player2_size))
+
+# Web-shooting animation — same crop/scale treatment as Conor's frames so
+# Spiderman's sprite stays consistent when he swaps to the shoot pose.
+player2_shoot_img = pygame.image.load(join(BASE_DIR, "images", "spidy_shoot.png")).convert_alpha()
+rect = player2_shoot_img.get_bounding_rect()
+player2_shoot_img = player2_shoot_img.subsurface(rect).copy()
+player2_shoot_img = pygame.transform.scale(player2_shoot_img, (player2_size, player2_size))
+
+WEB_SIZE = 60
+web_img = pygame.image.load(join(BASE_DIR, "images", "web.png")).convert_alpha()
+web_img = pygame.transform.scale(web_img, (WEB_SIZE, WEB_SIZE))
 
 bg_img = pygame.image.load(join(BASE_DIR, "images", "cage2.png")).convert()
 bg_img = pygame.transform.scale(bg_img, (SCREEN_WIDTH, SCREEN_HEIGHT))
@@ -230,7 +244,7 @@ def reset_game():
     global game_over, roll_active, roll_x, roll_y, roll_last_spawn, roll_glow_tick
 
     player_x, player_y = 100, GROUND_Y
-    player2_x, player2_y = SCREEN_WIDTH - 200, GROUND_Y
+    player2_x, player2_y = SCREEN_WIDTH - 200, PLAYER2_GROUND_Y
     player_health = CONOR_MAX_HEALTH
     player2_health = SPIDERMAN_MAX_HEALTH
     player_last_attack = 0
@@ -282,7 +296,9 @@ def draw_roll_glow(x, y, tick):
         radius = int(pulse * i / 6)
         alpha  = int(120 * (i / 6))        # brighter in the centre
         pygame.draw.circle(glow_surf, (80, 255, 80, alpha), (pulse, pulse), radius)
-    cx = x + ROLL_SIZE // 2
+    # cfr.png's actual artwork sits well left of its canvas centre, so shift
+    # the glow left to line up with the drawing instead of the empty canvas.
+    cx = x + ROLL_SIZE // 2 - 17
     cy = y + ROLL_SIZE // 2
     screen.blit(glow_surf, (cx - pulse, cy - pulse))
 
@@ -375,12 +391,12 @@ def run_level():
             if spider_is_jumping:
                 spider_vel_y  += GRAVITY
                 player2_y     += spider_vel_y
-                if player2_y >= GROUND_Y:
-                    player2_y        = GROUND_Y
+                if player2_y >= PLAYER2_GROUND_Y:
+                    player2_y        = PLAYER2_GROUND_Y
                     spider_vel_y     = 0
                     spider_is_jumping = False
             else:
-                player2_y = GROUND_Y
+                player2_y = PLAYER2_GROUND_Y
 
             # Conor AI: chase Spiderman horizontally only — only when NOT being knocked back
             if now >= player_knockback[2]:
@@ -527,7 +543,17 @@ def run_level():
             conor_frame_img = pygame.transform.flip(conor_frame_img, True, False)
 
         screen.blit(conor_frame_img, (player_x, player_y))
-        screen.blit(player2_img, (player2_x, player2_y))
+
+        # Spiderman: swap to the shoot pose and draw a web trail to Conor
+        # for a short flash after each attack.
+        if now_draw - player2_last_attack < ATTACK_FLASH_MS:
+            screen.blit(player2_shoot_img, (player2_x, player2_y))
+            web_start = (player2_x + player2_size // 2, player2_y + player2_size // 2)
+            web_end   = (player_x + player_size // 2, player_y + player_size // 2)
+            pygame.draw.line(screen, (255, 255, 255), web_start, web_end, 3)
+            screen.blit(web_img, web_img.get_rect(center=web_end))
+        else:
+            screen.blit(player2_img, (player2_x, player2_y))
 
         draw_health_bar(player_x,  player_y,  player_health,  CONOR_MAX_HEALTH)
         draw_health_bar(player2_x, player2_y, player2_health, SPIDERMAN_MAX_HEALTH)
