@@ -18,7 +18,7 @@ DARK_NAV = "#060814"
 CITY_BLD = "#070a14"
 AMBER    = "#b88010"
 
-W, H = 900, 650          # window size
+W, H = 1280, 720          # window size
 SCROLL_SPEED = 3         # pixels per frame (lower = slower)
 FPS          = 60
 
