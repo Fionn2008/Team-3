@@ -93,6 +93,9 @@ super_shoot_sound.set_volume(0.9)
 angry_docock_sound = pygame.mixer.Sound(join(BASE_DIR, "audio", "scream.wav"))
 angry_docock_sound.set_volume(0.9)
 laser_sound = pygame.mixer.Sound(join(BASE_DIR, "audio", "laser.wav"))
+eoo_sound = pygame.mixer.Sound(join(BASE_DIR, "audio","eooo.mp3"))
+eoo_sound.set_volume(0.5)
+eoo_sound.play(loops=-1)
 # --- Super Power-Up Setup ---
 super_items = []
 has_super_power = False
