@@ -35,9 +35,10 @@ player2_x = SCREEN_WIDTH - 200
 player2_y = GROUND_Y
 
 # Health settings
-MAX_HEALTH = 100
-player_health = MAX_HEALTH
-player2_health = MAX_HEALTH
+CONOR_MAX_HEALTH     = 300
+SPIDERMAN_MAX_HEALTH = 120
+player_health = CONOR_MAX_HEALTH
+player2_health = SPIDERMAN_MAX_HEALTH
 
 CONOR_ATTACK_DAMAGE = 5
 SPIDERMAN_ATTACK_DAMAGE = 10
@@ -166,11 +167,11 @@ button_font   = pygame.font.SysFont(None, 48)
 # Helper functions
 # ---------------------------------------------------------------------------
 
-def draw_health_bar(x, y, health):
+def draw_health_bar(x, y, health, max_health):
     """Draws a health bar with numerical health value displayed inside the bar."""
     bar_width = 100
     bar_height = 18
-    fill = int(bar_width * (health / MAX_HEALTH))
+    fill = int(bar_width * (health / max_health))
 
     pygame.draw.rect(screen, (255, 0, 0),   (x, y - 22, bar_width, bar_height))
     pygame.draw.rect(screen, (0, 255, 0),   (x, y - 22, fill, bar_height))
@@ -230,8 +231,8 @@ def reset_game():
 
     player_x, player_y = 100, GROUND_Y
     player2_x, player2_y = SCREEN_WIDTH - 200, GROUND_Y
-    player_health = MAX_HEALTH
-    player2_health = MAX_HEALTH
+    player_health = CONOR_MAX_HEALTH
+    player2_health = SPIDERMAN_MAX_HEALTH
     player_last_attack = 0
     player2_last_attack = 0
     player_knockback = (0, 0, 0)
@@ -325,7 +326,9 @@ def run_level():
                 if event.key == pygame.K_SPACE:
                     if game_over and won:
                         return "win"
-                    # Spiderman jumps on SPACE — only when on the ground
+
+                if event.key == pygame.K_UP:
+                    # Spiderman jumps on UP ARROW — only when on the ground
                     if not game_over and not spider_is_jumping:
                         spider_vel_y   = JUMP_VELOCITY
                         spider_is_jumping = True
@@ -349,7 +352,6 @@ def run_level():
         # ---- PLAYING ----
         if not game_over:
             keys = pygame.key.get_pressed()
-            mouse_buttons = pygame.mouse.get_pressed()
 
             now = pygame.time.get_ticks()
 
@@ -422,7 +424,7 @@ def run_level():
                 roll_rect      = pygame.Rect(roll_x, roll_y, ROLL_SIZE, ROLL_SIZE)
                 spiderman_rect = pygame.Rect(player2_x, player2_y, player2_size, player2_size)
                 if spiderman_rect.colliderect(roll_rect):
-                    player2_health = min(MAX_HEALTH, player2_health + ROLL_HEAL_AMOUNT)
+                    player2_health = min(SPIDERMAN_MAX_HEALTH, player2_health + ROLL_HEAL_AMOUNT)
                     roll_active = False
                     roll_last_spawn = now   # start the cooldown from now
 
@@ -445,8 +447,8 @@ def run_level():
                     conor_anim_timer  = now
                     conor_anim_locked = True
 
-            # Spiderman attacks with LEFT CLICK
-            if mouse_buttons[0] and distance < SPIDERMAN_ATTACK_RANGE and now - player2_last_attack > ATTACK_COOLDOWN:
+            # Spiderman attacks with SPACE BAR
+            if keys[pygame.K_SPACE] and distance < SPIDERMAN_ATTACK_RANGE and now - player2_last_attack > ATTACK_COOLDOWN:
                 player2_last_attack = now
                 player_health = max(0, player_health - SPIDERMAN_ATTACK_DAMAGE)
                 player_knockback = calc_knockback(
@@ -527,8 +529,8 @@ def run_level():
         screen.blit(conor_frame_img, (player_x, player_y))
         screen.blit(player2_img, (player2_x, player2_y))
 
-        draw_health_bar(player_x,  player_y,  player_health)
-        draw_health_bar(player2_x, player2_y, player2_health)
+        draw_health_bar(player_x,  player_y,  player_health,  CONOR_MAX_HEALTH)
+        draw_health_bar(player2_x, player2_y, player2_health, SPIDERMAN_MAX_HEALTH)
 
         # ---- Game over overlay ----
         if game_over:
