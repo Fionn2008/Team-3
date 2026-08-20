@@ -1,46 +1,70 @@
-
 <!DOCTYPE html>
 <html>
-    <head>
-        <meta charset="utf-8">
-        <link rel="stylesheet" href="style.css">
-        <link rel="stylesheet" href="contact.css">
-        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+<head>
+    <meta charset="utf-8">
+
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="contact.css">
+
+    <link rel="stylesheet"
+          href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+
+    <link rel="icon" type="image/x-icon" href="AI generated.png">
+
+    <title>Contact - Spuder-Man: Far From Dublin</title>
+</head>
+
+<body>
+
+    <h1><b>Spuder-Man: Far From Dublin</b></h1>
 
 
-        <link rel="icon" type="image/x-icon" href=", AI generated.png">
-    </head>
-    <body>
-        <h1><b>Spuder-Man: Far From Dublin</b></h1>
+    <!-- ================= NAVIGATION BAR ================= -->
 
-<div class="navbar">
-  <a href="index.html">Home</a>
-  <a href="AboutUs.html">About Us</a>
-  <a href="Information.html">Information</a>
-  <a class="active" href="Contact.html">Contact</a>
-  <div class="dropdown">
-    <button class="dropbtn">Levels
-      <i class="fa fa-caret-down"></i>
-    </button>
-    <div class="dropdown-content">
-      <a href="Level1.html">Level 1</a>
-      <a href="Level2.html">Level 2</a>
-      <a href="Level3.html">Level 3</a>
+    <div class="navbar">
+
+        <a href="index.html">Home</a>
+
+        <a href="AboutUs.html">About Us</a>
+
+        <a href="Information.html">Information</a>
+
+        <a class="active" href="Contact.html">Contact</a>
+
+        <div class="dropdown">
+
+            <button class="dropbtn">
+                Levels
+                <i class="fa fa-caret-down"></i>
+            </button>
+
+            <div class="dropdown-content">
+
+                <a href="Level1.html">Level 1</a>
+                <a href="Level2.html">Level 2</a>
+                <a href="Level3.html">Level 3</a>
+
+            </div>
+
+        </div>
+
     </div>
-  </div>
-</div>
 
- <!-- CONTACT SECTION -->
+
+    <!-- ================= CONTACT SECTION ================= -->
 
     <section class="contact-section">
 
-        <!-- LEFT SIDE -->
+
+        <!-- ================= LEFT SIDE ================= -->
 
         <div class="contact-information">
 
             <h2>GET IN TOUCH WITH US NOW!</h2>
 
+
             <div class="contact-grid">
+
 
                 <!-- Phone -->
 
@@ -63,7 +87,9 @@
 
                     <h3>Email</h3>
 
-                    <p>spudermanfarfromdublin@gmail.com</p>
+                    <p>
+                        spudermanfarfromdublin@gmail.com
+                    </p>
 
                 </div>
 
@@ -83,7 +109,7 @@
                 </div>
 
 
-                <!-- Hours -->
+                <!-- Working Hours -->
 
                 <div class="contact-item">
 
@@ -103,40 +129,71 @@
         </div>
 
 
-        <!-- RIGHT SIDE -->
+        <!-- ================= RIGHT SIDE - CONTACT FORM ================= -->
 
         <div class="contact-form">
 
             <h2>CONTACT US</h2>
 
-            <form id="contactForm"></form>
+
+            <!-- Web3Forms -->
+
+            <form action="https://api.web3forms.com/submit" method="POST">
+
+
+                <!-- YOUR WEB3FORMS ACCESS KEY -->
+
+                <input type="hidden"
+                       name="access_key"
+                       value="e2c0eea2-05cf-4e31-8f1d-c6211e045bd0">
+
+
+                <!-- Email subject -->
+
+                <input type="hidden"
+                       name="subject"
+                       value="New Contact Form Message - Spuder-Man: Far From Dublin">
+
+
+                <!-- ================= FIRST NAME / LAST NAME ================= -->
 
                 <div class="form-row">
+
+
+                    <!-- First Name -->
 
                     <div class="form-group">
 
                         <label>First Name *</label>
 
                         <div class="input-box">
+
                             <i class="fas fa-user"></i>
 
                             <input type="text"
+                                   name="first_name"
                                    placeholder="First Name"
                                    required>
+
                         </div>
 
                     </div>
 
+
+                    <!-- Last Name -->
 
                     <div class="form-group">
 
                         <label>Last Name</label>
 
                         <div class="input-box">
+
                             <i class="fas fa-user"></i>
 
                             <input type="text"
+                                   name="last_name"
                                    placeholder="Last Name">
+
                         </div>
 
                     </div>
@@ -144,33 +201,46 @@
                 </div>
 
 
+                <!-- ================= PHONE / EMAIL ================= -->
+
                 <div class="form-row">
+
+
+                    <!-- Phone -->
 
                     <div class="form-group">
 
                         <label>Mobile No *</label>
 
                         <div class="input-box">
+
                             <i class="fas fa-phone"></i>
 
                             <input type="tel"
+                                   name="phone"
                                    placeholder="Mobile Number"
                                    required>
+
                         </div>
 
                     </div>
 
+
+                    <!-- Email -->
 
                     <div class="form-group">
 
                         <label>Email ID *</label>
 
                         <div class="input-box">
+
                             <i class="fas fa-envelope"></i>
 
                             <input type="email"
+                                   name="email"
                                    placeholder="Email Address"
                                    required>
+
                         </div>
 
                     </div>
@@ -178,25 +248,31 @@
                 </div>
 
 
-                <!-- Message -->
+                <!-- ================= MESSAGE ================= -->
 
                 <div class="form-group full-width">
 
-                    <label>Message</label>
+                    <label>Message *</label>
 
                     <textarea
+                        name="message"
                         placeholder="Write your message here..."
-                        rows="5"></textarea>
+                        rows="5"
+                        required></textarea>
 
                 </div>
 
 
-                <!-- Submit -->
+                <!-- ================= SUBMIT BUTTON ================= -->
 
                 <button type="submit" class="submit-button">
+
                     Submit
+
                     <i class="fas fa-paper-plane"></i>
+
                 </button>
+
 
             </form>
 
@@ -204,53 +280,83 @@
 
     </section>
 
-    <!-- SUCCESS POPUP -->
 
-<div id="successPopup" class="success-popup">
+    <!-- ================= SUCCESS POPUP ================= -->
 
-    <div class="success-box">
+    <div id="successPopup" class="success-popup">
 
-        <i class="fas fa-circle-check"></i>
+        <div class="success-box">
 
-        <h2>Message Sent!</h2>
+            <i class="fas fa-circle-check"></i>
+
+            <h2>Message Sent!</h2>
+
+            <p>
+                Thank you for contacting us.
+                We'll get back to you soon!
+            </p>
+
+            <button onclick="closePopup()">
+                OK
+            </button>
+
+        </div>
+
+    </div>
+
+
+    <!-- ================= BACK TO TOP ================= -->
+
+    <a href="#" class="back-to-top">
+        🕷 Back to Top
+    </a>
+
+
+    <!-- ================= FOOTER ================= -->
+
+    <footer>
 
         <p>
-            Thank you for contacting us.
-            We'll get back to you soon!
+            © 2026 Spuder-Man: Far From Dublin
         </p>
 
-        <button onclick="closePopup()">OK</button>
 
-    </div>
+        <div class="social-icons">
 
-</div>
+            <a href="https://www.instagram.com/spiderman_farfromdublin/"
+               aria-label="Instagram">
+
+                <i class="fab fa-instagram"></i>
+
+            </a>
 
 
-<a href="#" class="back-to-top">
-    🕷 Back to Top
-</a>
+            <a href="#"
+               aria-label="TikTok">
 
-<footer>
-    <p>© 2026 Spuder-Man: Far From Dublin</p>
+                <i class="fab fa-tiktok"></i>
 
-    <div class="social-icons">
-        <a href="https://www.instagram.com/spiderman_farfromdublin/" aria-label="Instagram">
-            <i class="fab fa-instagram"></i>
-        </a>
+            </a>
 
-        <a href="#" aria-label="TikTok">
-            <i class="fab fa-tiktok"></i>
-        </a>
 
-        <a href="#" aria-label="Facebook">
-            <i class="fab fa-facebook"></i>
-        </a>
+            <a href="#"
+               aria-label="Facebook">
 
-        <a href="#" aria-label="YouTube">
-            <i class="fab fa-youtube"></i>
-        </a>
-    </div>
-</footer>
+                <i class="fab fa-facebook"></i>
+
+            </a>
+
+
+            <a href="#"
+               aria-label="YouTube">
+
+                <i class="fab fa-youtube"></i>
+
+            </a>
+
+        </div>
+
+    </footer>
 
 
 </body>
