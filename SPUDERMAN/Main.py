@@ -1,8 +1,8 @@
 import pygame
 import sys
-import webbrowser
 from os.path import join, dirname, abspath
 import credits
+import cutscene
 
 # Initialize Pygame
 pygame.init()
@@ -41,11 +41,9 @@ button_font   = pygame.font.SysFont(None, 48)
 start_bg_img = pygame.image.load(join(BASE_DIR, "images", "start screen.png")).convert()
 start_bg_img = pygame.transform.scale(start_bg_img, (SCREEN_WIDTH, SCREEN_HEIGHT))
 
-# Cutscene slides
-CUTSCENE_DIR    = join(BASE_DIR, "images", "CutScenes")
-INTRO_SLIDES    = range(1, 6)    # before Level 1
-PRE_LVL3_SLIDES = range(6, 14)   # before Level 3
-END_SLIDES      = range(14, 19)  # after Level 3
+# Cutscene videos
+INTRO_VIDEO = join(BASE_DIR, "Cutstart.mp4")  # plays once START is pressed
+END_VIDEO   = join(BASE_DIR, "Cutend.mp4")    # plays after Level 3 is beaten
 
 # Game states
 START    = "start"
@@ -201,48 +199,8 @@ def draw_victory_screen(mouse_pos):
 # Cutscene helpers
 # ---------------------------------------------------------------------------
 
-def _pump_quit_events():
-    for event in pygame.event.get():
-        if event.type == pygame.QUIT:
-            pygame.quit()
-            sys.exit()
-
-
-def _fade_slide(slide_img, from_alpha, to_alpha, duration_ms):
-    start = pygame.time.get_ticks()
-    while True:
-        _pump_quit_events()
-        elapsed  = pygame.time.get_ticks() - start
-        if elapsed >= duration_ms:
-            break
-        progress = elapsed / duration_ms
-        alpha    = int(from_alpha + (to_alpha - from_alpha) * progress)
-        screen.fill(COLOR_BLACK)
-        slide_img.set_alpha(alpha)
-        screen.blit(slide_img, (0, 0))
-        pygame.display.flip()
-        clock.tick(60)
-
-
-def _hold_slide(slide_img, duration_ms):
-    start = pygame.time.get_ticks()
-    while pygame.time.get_ticks() - start < duration_ms:
-        _pump_quit_events()
-        screen.blit(slide_img, (0, 0))
-        pygame.display.flip()
-        clock.tick(60)
-
-
-def play_cutscene(slide_numbers, hold_ms=2000, fade_ms=500):
-    for n in slide_numbers:
-        slide_img = pygame.image.load(
-            join(CUTSCENE_DIR, f"Slide{n}.PNG")).convert()
-        slide_img = pygame.transform.scale(
-            slide_img, (SCREEN_WIDTH, SCREEN_HEIGHT))
-        _fade_slide(slide_img, 0, 255, fade_ms)
-        slide_img.set_alpha(255)
-        _hold_slide(slide_img, hold_ms)
-        _fade_slide(slide_img, 255, 0, fade_ms)
+def play_cutscene(video_path):
+    cutscene.play_video(screen, clock, video_path)
 
 
 # ---------------------------------------------------------------------------
@@ -258,19 +216,16 @@ def show_credits():
 # ---------------------------------------------------------------------------
 
 def run_campaign():
-    play_cutscene(INTRO_SLIDES)
+    play_cutscene(INTRO_VIDEO)
 
     if lvl1.run_level() != "win":
         return
     if lvl2.run_level() != "win":
         return
-
-    play_cutscene(PRE_LVL3_SLIDES)
-
     if lvl3.run_level() != "win":
         return
 
-    play_cutscene(END_SLIDES)
+    play_cutscene(END_VIDEO)
     show_credits()
 
 

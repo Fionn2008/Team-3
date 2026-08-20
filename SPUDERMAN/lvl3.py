@@ -86,26 +86,16 @@ doc_last_shot_time = 0
 doc_projectile_img = pygame.transform.scale(web_img, (40, 40))
 
 # --- Sound Effects ---
-# Kept quiet so they don't drown out the background music when they fire.
 shoot_sound = pygame.mixer.Sound(join(BASE_DIR, "audio", "shoot.wav"))
-shoot_sound.set_volume(0.05)
+shoot_sound.set_volume(0.6)
 super_shoot_sound = pygame.mixer.Sound(join(BASE_DIR, "audio", "explode.wav"))
-super_shoot_sound.set_volume(0.05)
+super_shoot_sound.set_volume(0.9)
 angry_docock_sound = pygame.mixer.Sound(join(BASE_DIR, "audio", "scream.wav"))
-angry_docock_sound.set_volume(0.1)
+angry_docock_sound.set_volume(0.9)
 laser_sound = pygame.mixer.Sound(join(BASE_DIR, "audio", "laser.wav"))
-
-# Background music — played on the dedicated music channel (not a Sound
-# effect channel) so attack sound effects can never cut it off or compete
-# with it for a channel. See run_level() for where it's played/stopped.
-MUSIC_PATH = join(BASE_DIR, "audio", "eooo.mp3")
-try:
-    pygame.mixer.music.load(MUSIC_PATH)
-    pygame.mixer.music.set_volume(0.5)
-    MUSIC_LOADED = True
-except (pygame.error, FileNotFoundError):
-    MUSIC_LOADED = False
-
+eoo_sound = pygame.mixer.Sound(join(BASE_DIR, "audio","eooo.mp3"))
+eoo_sound.set_volume(0.5)
+eoo_sound.play(loops=-1)
 # --- Super Power-Up Setup ---
 super_items = []
 has_super_power = False
@@ -193,8 +183,6 @@ def run_level():
 
     reset_game()
     won = False
-    if MUSIC_LOADED:
-        pygame.mixer.music.play(loops=-1)
 
     while True:
         # ── Event Loop ──────────────────────────────────────────
@@ -205,8 +193,6 @@ def run_level():
 
             if event.type == pygame.KEYDOWN:
                 if game_over and won and event.key == pygame.K_SPACE:
-                    if MUSIC_LOADED:
-                        pygame.mixer.music.stop()
                     return "win"
                 elif game_over and not won and event.key == pygame.K_r:
                     reset_game()

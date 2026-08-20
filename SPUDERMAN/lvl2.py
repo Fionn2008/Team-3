@@ -22,17 +22,8 @@ if screen is None:
     pygame.display.set_caption("Spiderman - Far From Dublin")
 SCREEN_RECT = screen.get_rect()
 
-# Background music — see run_level() for where it's played/stopped.
-MUSIC_PATH = join(BASE_DIR, "audio", "lvl2_theme.mp3")
-try:
-    pygame.mixer.music.load(MUSIC_PATH)
-    pygame.mixer.music.set_volume(0.5)
-    MUSIC_LOADED = True
-except (pygame.error, FileNotFoundError):
-    MUSIC_LOADED = False
-
 # ======================================== Health & Attack settings ================================================
-MAX_HEALTH = 250
+MAX_HEALTH = 100
 HEART_DAMAGE = 5
 
 player_health = MAX_HEALTH  # Spider-Man
@@ -208,8 +199,6 @@ def run_level():
 
     reset_game()
     won = False
-    if MUSIC_LOADED:
-        pygame.mixer.music.play(loops=-1)
 
     while True:
         mouse_pos = pygame.mouse.get_pos()
@@ -223,8 +212,6 @@ def run_level():
 
             if event.type == pygame.KEYDOWN:
                 if event.key == pygame.K_SPACE and game_over and won:
-                    if MUSIC_LOADED:
-                        pygame.mixer.music.stop()
                     return "win"
 
             if event.type == pygame.MOUSEBUTTONDOWN and event.button == 1:
