@@ -19,6 +19,16 @@ if screen is None:
     screen = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT))
     pygame.display.set_caption("Spiderman - Far From Dublin")
 
+# Background music — see run_level() for where it's played/stopped.
+# Drop your own track in at SPUDERMAN/audio/lvl1_theme.mp3 (see chat for details).
+MUSIC_PATH = join(BASE_DIR, "audio", "lvl1_theme.mp3")
+try:
+    pygame.mixer.music.load(MUSIC_PATH)
+    pygame.mixer.music.set_volume(0.5)
+    MUSIC_LOADED = True
+except (pygame.error, FileNotFoundError):
+    MUSIC_LOADED = False
+
 # Fixed ground level — both characters are locked to this Y position
 GROUND_Y = 450
 
@@ -328,6 +338,8 @@ def run_level():
 
     reset_game()
     won = False
+    if MUSIC_LOADED:
+        pygame.mixer.music.play(loops=-1)
 
     while True:
         mouse_pos = pygame.mouse.get_pos()
@@ -341,6 +353,8 @@ def run_level():
             if event.type == pygame.KEYDOWN:
                 if event.key == pygame.K_SPACE:
                     if game_over and won:
+                        if MUSIC_LOADED:
+                            pygame.mixer.music.stop()
                         return "win"
 
                 if event.key == pygame.K_UP:
